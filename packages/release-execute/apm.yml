@@ -1,0 +1,8 @@
+name: release-execute
+version: 0.1.0
+description: CHANGELOG.md の `## [Unreleased]` を新バージョンに昇格し、SemVer タグの作成・コミット・push までを一括で行う
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []

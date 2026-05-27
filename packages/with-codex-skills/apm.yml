@@ -1,0 +1,8 @@
+name: with-codex-skills
+version: 0.1.0
+description: tmux 上で the agent と Codex CLI を協調動作させ、second opinion・タスク分担・interactive 比較レビューを行う multi-file skill。SKILL.md + references/workflows.md + scripts/{codex-exec.sh, codex-manager.sh} の 4 ファイル構成
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []

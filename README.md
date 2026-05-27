@@ -1,6 +1,8 @@
 # agent-package-basic
 
-汎用の AI agent パッケージ集 (公開可)。Claude Code / Codex CLI / Gemini で共通利用するスラッシュコマンドや skill を、[APM (Agent Package Manager)](https://microsoft.github.io/apm/) で配布する。
+汎用の AI agent パッケージ集 (公開可)。Claude Code / Codex CLI / Gemini で
+共通利用するスラッシュコマンドや skill を、[APM (Agent Package Manager)](https://microsoft.github.io/apm/)
+で配布する。
 
 ## レイアウト
 
@@ -34,9 +36,14 @@ apm install -g Caromaf/agent-package-basic/packages/review-pr#v0.1.0
 
 ## 開発
 
+このリポジトリは **public** だが、特定マシンからしか push しない運用。
 パッケージ追加・修正の流れ:
 
 1. ブランチを切って編集 (main 直 push しない)
 2. PR を作って merge
 3. `git tag vX.Y.Z` してタグ push
 4. 利用側の `apm.yml` の `#vX.Y.Z` を上げて `apm install -g` で反映
+
+## ライセンス
+
+MIT

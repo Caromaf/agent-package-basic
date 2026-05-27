@@ -1,0 +1,8 @@
+name: scaffold
+version: 0.1.0
+description: 「こういうサービスを作りたい」という方向性から既存リポジトリのパターン分析・技術設計ドキュメント・段階的な Issue セットまでを生成する
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []

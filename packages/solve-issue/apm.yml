@@ -1,0 +1,8 @@
+name: solve-issue
+version: 0.1.0
+description: Issue を作成（または既存 Issue を指定）し、ブランチ作成 → 実装 → PR 作成までを一連で行う
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []

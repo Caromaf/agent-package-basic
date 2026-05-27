@@ -1,0 +1,8 @@
+name: frontend-aesthetics
+version: 0.1.0
+description: AI 特有のありきたりなデザイン (AI slop) を回避し、独創的で洗練された UI を構築するためのフロントエンド美学指針 skill
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []

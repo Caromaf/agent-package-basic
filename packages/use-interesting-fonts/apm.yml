@@ -1,0 +1,8 @@
+name: use-interesting-fonts
+version: 0.1.0
+description: 汎用フォント (Inter, Roboto, Arial 等) を避け、デザイン性の高いタイポグラフィを Google Fonts から選択するための指針 skill
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []

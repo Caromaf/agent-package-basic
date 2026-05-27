@@ -1,0 +1,8 @@
+name: review-design-doc
+version: 0.1.0
+description: 設計方針や仕様を記述したデザインドキュメントの PR を概要把握 → diff 確認 → 設計妥当性検証の流れでレビューする
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []

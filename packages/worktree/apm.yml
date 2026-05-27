@@ -1,0 +1,8 @@
+name: worktree
+version: 0.1.0
+description: git worktree で隔離された作業環境を作成・保持・削除する。claude では EnterWorktree/ExitWorktree、codex では `git worktree` コマンドで実現する 2 系統
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []

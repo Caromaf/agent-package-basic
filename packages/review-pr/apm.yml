@@ -1,0 +1,8 @@
+name: review-pr
+version: 0.1.0
+description: Review a pull request end-to-end (gh pr view/diff, unit tests, comment audit)
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []

@@ -1,0 +1,8 @@
+name: release-prepare
+version: 0.1.0
+description: 最後の git タグからのコミットと diff を分類し、CHANGELOG.md の `## [Unreleased]` セクションを更新する
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []

@@ -1,0 +1,8 @@
+name: ux-review
+version: 0.1.0
+description: AI ペルソナで Playwright MCP 経由のブラウザ操作を行い、UI/UX の詰まりどころをレポートとしてまとめる
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
