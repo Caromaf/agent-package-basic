@@ -1,0 +1,8 @@
+name: respond-pr
+version: 0.1.0
+description: GitHub PR のレビュースレッドを取得し、返信コメント投稿と `resolveReviewThread` GraphQL mutation まで完走させる multi-file skill。SKILL.md + scripts/{list_unresolved_threads.sh, reply_to_thread.sh, resolve_thread.sh} の 4 ファイル構成
+author: Seika139
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
