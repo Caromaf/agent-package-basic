@@ -1,0 +1,8 @@
+name: close-issue
+version: 0.1.0
+description: Issue クローズ後の動作確認・GitHub Projects 更新・関連 Issue/PR 更新・ブランチ片付けを一連で行う
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
