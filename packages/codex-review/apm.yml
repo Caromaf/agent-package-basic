@@ -1,0 +1,8 @@
+name: codex-review
+version: 0.1.0
+description: the agent が書いたコードを Codex CLI (`codex review` / `codex exec`) にレビューさせ、指摘を反映するサイクルを回す skill
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
