@@ -1,0 +1,8 @@
+name: create-issue
+version: 0.1.0
+description: 引数とデフォルト設定から GitHub Issue を起票し、GitHub Projects のフィールド設定や親子関係の紐付けまで行う
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
