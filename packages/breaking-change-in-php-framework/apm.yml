@@ -1,0 +1,8 @@
+name: breaking-change-in-php-framework
+version: 0.1.0
+description: 外部公開を想定した PHP フレームワークのコードレビュー時に破壊的変更の有無と CHANGELOG.md への記載を判定する判定ルール skill
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
