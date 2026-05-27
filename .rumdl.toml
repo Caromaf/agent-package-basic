@@ -1,0 +1,14 @@
+[global]
+disable = [
+  "MD013", # line length — free (LLM may write long summary lines)
+  "MD024", # duplicate headings — allowed (log.md repeats date headers)
+  "MD033", # inline HTML — allowed
+  "MD036", # emphasis as heading — allowed
+  "MD041", # first line must be a heading — not needed (frontmatter comes first)
+  "MD060", # table pipe style — allowed
+]
+
+respect_gitignore = true
+
+[MD025]
+front-matter-title = '^\s*title\s*[:=]'
