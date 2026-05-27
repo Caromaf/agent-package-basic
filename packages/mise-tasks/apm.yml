@@ -1,0 +1,8 @@
+name: mise-tasks
+version: 0.1.0
+description: mise の task / config を扱う際に守るべき構造ルール (mise.toml に肥大化させない、ロジックは tasks/scripts/*.sh に分離する等) と参照ドキュメントをまとめた判定 skill
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
