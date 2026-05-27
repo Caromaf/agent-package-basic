@@ -1,0 +1,8 @@
+name: gh-unlink-subissue
+version: 0.1.0
+description: GitHub Issue から Sub-issue の紐付けを解除する skill。Issue 自体は削除せず関係のみ解除する
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
