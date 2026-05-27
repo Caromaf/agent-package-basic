@@ -3,6 +3,10 @@ rumdl = "latest"
 taplo = "latest"
 yamllint = "latest"
 
+[tasks.grant-permission]
+quiet = true
+run = ["find ./packages -type f -name \"*.sh\" -exec chmod +x {} +"]
+
 [tasks.format]
 quiet = true
 run = ["rumdl fmt", "RUST_LOG=warn taplo fmt", "yamllint -f auto ."]
