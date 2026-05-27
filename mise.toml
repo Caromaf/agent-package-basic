@@ -1,3 +1,11 @@
 [tools]
 rumdl = "latest"
+taplo = "latest"
 
+[tasks.format]
+quiet = true
+run = ["rumdl fmt", "RUST_LOG=warn taplo fmt"]
+
+[tasks.lint]
+quiet = true
+run = ["rumdl check", "RUST_LOG=warn taplo fmt --check --diff"]
