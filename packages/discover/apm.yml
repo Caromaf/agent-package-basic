@@ -1,0 +1,8 @@
+name: discover
+version: 0.1.0
+description: 曖昧な課題意識からコードベースを分析し、改善 Issue の草案を生成・起票する
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
