@@ -1,11 +1,12 @@
 [tools]
 rumdl = "latest"
 taplo = "latest"
+yamllint = "latest"
 
 [tasks.format]
 quiet = true
-run = ["rumdl fmt", "RUST_LOG=warn taplo fmt"]
+run = ["rumdl fmt", "RUST_LOG=warn taplo fmt", "yamllint -f auto ."]
 
 [tasks.lint]
 quiet = true
-run = ["rumdl check", "RUST_LOG=warn taplo fmt --check --diff"]
+run = ["rumdl check", "RUST_LOG=warn taplo fmt --check --diff", "yamllint ."]
