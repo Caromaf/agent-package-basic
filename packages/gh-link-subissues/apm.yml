@@ -1,0 +1,8 @@
+name: gh-link-subissues
+version: 0.1.0
+description: GitHub Issue に Sub-issue を紐付け、紐付けた Issue を GitHub Project に追加してフィールド (Status / Priority / Start date) を設定する skill
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
