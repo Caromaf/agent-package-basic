@@ -1,0 +1,8 @@
+name: framework-changelog
+version: 0.1.0
+description: 外部公開を想定したフレームワークの CHANGELOG.md を Keep a Changelog 形式で更新・レビューする際のフォーマットと内容ルールを定める判定 skill
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
