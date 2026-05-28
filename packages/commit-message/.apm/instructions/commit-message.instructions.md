@@ -1,4 +1,5 @@
 ---
+description: 日本語コミットメッセージの記法ルール (Conventional Commits 不使用・絵文字なし・Subject 50字以内で動詞終止・コード参照はバッククォート)
 applyTo: "**"
 ---
 
