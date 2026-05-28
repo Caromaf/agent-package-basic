@@ -1,0 +1,8 @@
+name: commit-message
+version: 0.1.0
+description: コミットメッセージの記法ルール (日本語、Conventional Commits 不使用、絵文字なし、Subject 50文字以内・動詞終止、コード参照はバッククォート)。APM `instructions` primitive で配信し、Claude/Cursor/Windsurf には per-file rules dir、Codex は AGENTS.md、Gemini は GEMINI.md に fold される
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
