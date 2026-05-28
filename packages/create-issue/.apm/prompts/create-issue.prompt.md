@@ -6,16 +6,18 @@ description: "Issue を起票する"
 
 # Issue 起票スキル
 
-## デフォルト設定
+## デフォルト設定 (オプション)
 
-以下は設定ファイルから読み込まれたデフォルト値です。
-引数で上書きされない場合、この値を使用してください。
+このスキルは **設定ファイルが無くても builtin default で動作します**。
+組織の repo や GitHub Projects に合わせて値を固定したい場合のみ、
+`~/.claude/custom-config/create-issue-config.json` に JSON を置いてください。
+引数で明示されたフラグは設定値より優先されます。
 
 ```json
 !`cat ~/.claude/custom-config/create-issue-config.json 2>/dev/null || echo '{"repo":"org/repo","project":{"owner":"","number":0,"status":"","done_status":"Done","start_date":"today"},"labels":[],"assignee":""}'`
 ```
 
-もし `custom-config/create-issue-config.json` が存在しない場合は、ユーザーに以下の内容でファイルを作成するよう促してください。
+設定ファイルを作成する場合のテンプレート:
 
 ```json
 {
