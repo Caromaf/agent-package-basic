@@ -6,7 +6,7 @@
 """Claude Code の会話ログから自己改善シグナルを抽出する。
 
 入力: ~/.claude/projects/<project>/<session>.jsonl
-出力: signals-<date>.json (人間レビュー用)
+出力: signals-<date>-<hhmm>.json (人間レビュー用)
 
 シグナル種別:
 - user_correction: 直前のアシスタント応答に対する否定/訂正
@@ -336,8 +336,9 @@ def main() -> int:
     if args.out is None:
         triage_dir = Path.cwd() / ".triage"
         triage_dir.mkdir(parents=True, exist_ok=True)
-        today = datetime.now(UTC).astimezone().strftime("%Y-%m-%d")
-        args.out = triage_dir / f"signals-{today}.json"
+        # 同日複数回実行しても上書きしないよう YYYY-MM-DD-HHMM まで含める。
+        stamp = datetime.now(UTC).astimezone().strftime("%Y-%m-%d-%H%M")
+        args.out = triage_dir / f"signals-{stamp}.json"
     else:
         args.out.parent.mkdir(parents=True, exist_ok=True)
 

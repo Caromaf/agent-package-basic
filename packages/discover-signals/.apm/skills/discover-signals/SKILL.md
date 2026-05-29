@@ -15,15 +15,21 @@ Claude Code の会話ログから「次セッション以降のために CLAUDE.
 - 訂正コストの高い箇所をリスト化し、改善 PR の元ネタにする
 - 完全自動化は狙わない。**人間が選別する一覧** を出すことに徹する
 
+## 前提
+
+- [`uv`](https://docs.astral.sh/uv/) が PATH に存在すること。本 skill 同梱のスクリプトは PEP 723 inline script で `uv run --script` を shebang に使う。`command not found: uv` が出た場合は `mise install uv` か `curl -LsSf https://astral.sh/uv/install.sh | sh` で導入してから再実行する。
+- 解析対象の `.jsonl` は `~/.claude/projects/**/*.jsonl` に存在する想定 (Claude Code のセッションログ)。
+
 ## 入力
 
 ```text
-discover-signals [--days N] [--project <name>] [--out <path>]
+discover-signals [--days N] [--project <name>] [--out <path>] [--projects-root <path>]
 ```
 
 - `--days N`: 過去 N 日分の `.jsonl` を対象にする (デフォルト 7)
 - `--project <name>`: 特定プロジェクトのみ対象 (例: `-home-ken-dotfiles`)。省略時は全プロジェクト
-- `--out <path>`: 出力先の JSON ファイル。省略時は `<cwd>/.triage/signals-<YYYY-MM-DD>.json`
+- `--out <path>`: 出力先の JSON ファイル。省略時は `<cwd>/.triage/signals-<YYYY-MM-DD>-<HHMM>.json` (同日複数回実行で上書きしない)
+- `--projects-root <path>`: `.jsonl` を探すルート (デフォルト `~/.claude/projects`)。Codex CLI / Gemini など別ツールのログ位置が違うときに上書きする
 
 ## 出力
 
@@ -59,28 +65,34 @@ JSON ファイル 1 つを書き出す。フォーマット:
 
 ## 実行手順
 
-### Step 1: 対象セッションの特定
+### Step 1: スクリプトを実行
+
+skill 同梱のスクリプトでパース・抽出する。**スクリプトのパスは SKILL.md からの相対** (`./scripts/extract_signals.py`) で参照する。配備先は環境ごとに異なる (Claude Code は `~/.claude/skills/discover-signals/`、Codex CLI 等は別パス) ため、絶対パスでハードコードしない。
+
+`SKILL.md` のあるディレクトリを起点に呼ぶ:
 
 ```bash
-# 全プロジェクトの場合
-find ~/.claude/projects -name "*.jsonl" -mtime -7
-
-# 特定プロジェクトの場合
-find ~/.claude/projects/-home-ken-dotfiles -name "*.jsonl" -mtime -7
+# 起動例 (cwd は何でも可。スクリプトに引数を渡せば出力先は cwd 配下になる)
+uv run --script "<skill-dir>/scripts/extract_signals.py" --days 7
 ```
 
-### Step 2: スクリプトを実行
-
-skill 同梱のスクリプトでパース・抽出する。
+`<skill-dir>` はこの SKILL.md がある場所。Claude Code 環境では `~/.claude/skills/discover-signals` に展開されているので、SKILL.md の場所を解決して呼べばよい:
 
 ```bash
-"$CLAUDE_PROJECT_DIR/.." # の代わりにこの skill を $HOME/.claude/skills/discover-signals/ から起動するため、絶対パスで呼ぶ
-~/.claude/skills/discover-signals/scripts/extract_signals.py \
-  --days 7 \
-  --out ./.triage/signals-$(date +%F).json
+# Claude Code: 標準配備
+~/.claude/skills/discover-signals/scripts/extract_signals.py --days 7
+
+# 別ツールで配備パスが違う場合
+uv run --script "$(dirname "$(realpath "$0")")/scripts/extract_signals.py" --days 7
 ```
 
-### Step 3: ユーザーへの提示
+セッション件数の概算が必要なときだけ、追加で `find` を使って良い (常用しない。スクリプト本体が同じ走査をやるので二度手間):
+
+```bash
+find ~/.claude/projects -name "*.jsonl" -mtime -7 | wc -l
+```
+
+### Step 2: ユーザーへの提示
 
 抽出した `signals[]` を以下の形式で要約表示する:
 
@@ -96,18 +108,18 @@ skill 同梱のスクリプトでパース・抽出する。
 │ ...
 └────────────────────────────────────────────────
 
-詳細: ./.triage/signals-YYYY-MM-DD.json
+詳細: ./.triage/signals-YYYY-MM-DD-HHMM.json
 次のステップ: triage-improvements skill でこのファイルを読み込み、PR 草案を生成できます。
 ```
 
-### Step 4: triage への引き継ぎ
+### Step 3: triage への引き継ぎ
 
 ユーザーが続行を望む場合、`triage-improvements` skill を起動する案内を出す:
 
 ```text
 PR 草案を生成するには次を実行してください:
 
-  /triage-improvements --signals ./.triage/signals-YYYY-MM-DD.json
+  /triage-improvements --signals ./.triage/signals-YYYY-MM-DD-HHMM.json
 ```
 
 ## 注意事項
