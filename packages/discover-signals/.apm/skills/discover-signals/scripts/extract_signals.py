@@ -67,6 +67,58 @@ REPEATED_MIN_LEN = 8
 USER_CORRECTION_LOOKBACK = 5
 CONSECUTIVE_FAILURES_MIN = 3
 
+# Claude Code の slash command / skill 起動時に「ユーザー発話」として注入される
+# 既知のテンプレート本文の冒頭。これらは "ユーザーが繰り返し言っている指示" ではなく
+# command 本文なので、メッセージ全体を検出対象から除外する。
+COMMAND_INJECTION_PREFIXES = (
+    "<command-name>",
+    "<command-message>",
+    "<command-args>",
+    "<local-command-stdout>",
+    "<bash-input>",
+    "<bash-stdout>",
+    "<bash-stderr>",
+    "<system-reminder>",
+    "Base directory for this skill:",
+    # /security-review 系
+    "You are a security expert reviewing",
+    # /code-review 系
+    "You are reviewing the current diff",
+    # /review 系の一般形
+    "You are a code reviewer",
+)
+
+# Claude Code 自身が user role で書き込むシステムメッセージ。完全一致で除外する。
+# (途中キャンセル/再開時の自動挿入であり、ユーザーの自由発話ではない)
+SYSTEM_GENERATED_USER_MESSAGES = frozenset(
+    {
+        "[Request interrupted by user]",
+        "[Request interrupted by user for tool use]",
+        "Continue from where you left off.",
+    }
+)
+
+# 注入された template 本文は数千文字に及ぶことが多い。
+# 人間の自由発話で 4000 文字を超えるものは稀なので、長文かつ複数セッションに登場するものは
+# repeated_instruction の対象から外す (個別キーワードを足し続けるイタチごっこを避けるため)。
+COMMAND_INJECTION_LENGTH_THRESHOLD = 4000
+
+
+def is_command_injection(text: str) -> bool:
+    """text が command/skill 起動時に注入された本文 or system 自動挿入なら True。
+
+    判定基準:
+    1. Claude Code が自動挿入する固定文 (interrupt 通知 / 再開指示)
+    2. 既知の prefix で始まる (`<command-name>`, `You are a security expert ...` 等)
+    3. 4000 文字超の長文 (人間の自由発話としては異常に長く、template 注入の可能性が高い)
+    """
+    stripped = text.strip()
+    if stripped in SYSTEM_GENERATED_USER_MESSAGES:
+        return True
+    if stripped.startswith(("<", "{")) or stripped.startswith(COMMAND_INJECTION_PREFIXES):
+        return True
+    return len(text) > COMMAND_INJECTION_LENGTH_THRESHOLD
+
 
 def iter_session_files(project_root: Path, days: int, project: str | None) -> Iterator[Path]:
     cutoff = datetime.now(UTC).astimezone().timestamp() - days * 86400
@@ -154,7 +206,7 @@ def detect_corrections(messages: list[dict], session_id: str, project: str) -> l
         text = extract_text(msg.get("message", {}).get("content"))
         if not text or not NEGATION_RE.search(text):
             continue
-        if text.lstrip().startswith(("<", "{")):
+        if is_command_injection(text):
             continue
 
         prev_assistant = _last_assistant_text(messages, i, USER_CORRECTION_LOOKBACK)
@@ -318,7 +370,7 @@ def process_session(jsonl_path: Path) -> tuple[list[dict], list[tuple[str, str, 
         if is_tool_result_message(msg):
             continue
         text = extract_text(msg.get("message", {}).get("content"))
-        if text and not text.lstrip().startswith(("<", "{")):
+        if text and not is_command_injection(text):
             user_messages.append((session_id, project, text))
 
     return signals, user_messages

@@ -21,6 +21,7 @@ ignore = [
   "D103",   # パッケージ内のスクリプトは docstring を必須としない
   "D203",   # D211 と競合するため無効化
   "D213",   # D212 と競合するため無効化
+  "D403",   # 1 単語目を大文字にする規則（日本語 docstring と相性が悪い）
   "D415",   # first line should end with a period（日本語のコメントを書くときに困るので無効化）
   "RUF002", # Allow ambiguous characters in docstrings (Japanese)
   "RUF003", # Allow ambiguous characters in comments (Japanese)
