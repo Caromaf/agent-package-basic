@@ -1,0 +1,42 @@
+# このリポは Python project ではない (APM パッケージ配布用)。
+# packages/*/.apm/skills/*/scripts/*.py は uv inline script (PEP 723) で配布される。
+# このファイルは ruff / ty の共通設定を集約するためだけに置いてある ([project] は意図的に省略)。
+
+[tool.ruff]
+target-version = "py313"
+extend-exclude = [".apm-cache", ".rumdl_cache"]
+# このリポは markdown 等で行長無制限を方針にしている (CLAUDE.md / .rumdl.toml 参照)。
+# Python も同方針で揃えるため E501 を無効化。意味の通る 1 行で書く。
+line-length = 120
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "COM812", # trailing comma — `ruff format` と競合するため公式に推奨される無効化
+]
+
+[tool.ruff.lint.per-file-ignores]
+"packages/*" = [
+  "T201",   # print の利用を許可
+  "D103",   # パッケージ内のスクリプトは docstring を必須としない
+  "D203",   # D211 と競合するため無効化
+  "D213",   # D212 と競合するため無効化
+  "D415",   # first line should end with a period（日本語のコメントを書くときに困るので無効化）
+  "RUF002", # Allow ambiguous characters in docstrings (Japanese)
+  "RUF003", # Allow ambiguous characters in comments (Japanese)
+]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ty.environment]
+python-version = "3.13"
+
+[tool.ty.src]
+include = ["packages"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

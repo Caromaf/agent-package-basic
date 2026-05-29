@@ -1,0 +1,8 @@
+name: triage-improvements
+version: 0.1.0
+description: "`discover-signals` が抽出した自己改善シグナル (`.triage/signals-*.json`) を読み込み、CLAUDE.md / SKILL.md への追記提案を生成、ユーザー承認を経て対象ファイルを編集し `git add` まで行う対話型 skill。コミット・push・PR 作成は責務外。"
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []

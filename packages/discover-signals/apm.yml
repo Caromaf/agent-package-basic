@@ -1,0 +1,8 @@
+name: discover-signals
+version: 0.1.0
+description: Claude Code の会話ログ (`~/.claude/projects/**/*.jsonl`) を走査し、ユーザー訂正・連続失敗・繰り返し指示などの自己改善シグナルを抽出して JSON で書き出す skill。`triage-improvements` skill の前段。
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []

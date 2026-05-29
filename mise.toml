@@ -1,6 +1,7 @@
 [tools]
 rumdl = "latest"
 taplo = "latest"
+uv = "latest"
 yamllint = "latest"
 
 [tasks.grant-permission]
@@ -9,11 +10,24 @@ quiet = true
 run = ["find ./packages -type f -name \"*.sh\" -exec chmod +x {} +"]
 
 [tasks.format]
-description = "rumdl, taplo, yamllint を使ってコードを整形する"
+description = "rumdl, taplo, yamllint, ruff を使ってコードを整形する"
 quiet = true
-run = ["rumdl fmt", "RUST_LOG=warn taplo fmt", "yamllint -f auto ."]
+run = [
+  "rumdl fmt",
+  "RUST_LOG=warn taplo fmt",
+  "yamllint -f auto .",
+  "uvx ruff format packages",
+  "uvx ruff check --fix packages",
+]
 
 [tasks.lint]
-description = "rumdl, taplo, yamllint を使ってコードをチェックする"
+description = "rumdl, taplo, yamllint, ruff, ty を使ってコードをチェックする"
 quiet = true
-run = ["rumdl check", "RUST_LOG=warn taplo fmt --check --diff", "yamllint ."]
+run = [
+  "rumdl check",
+  "RUST_LOG=warn taplo fmt --check --diff",
+  "yamllint .",
+  "uvx ruff check packages",
+  "uvx ruff format --check packages",
+  "uvx ty check packages",
+]

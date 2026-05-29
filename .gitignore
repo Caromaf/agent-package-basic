@@ -1,0 +1,15 @@
+# lint / format ツールのキャッシュ
+.ruff_cache/
+.rumdl_cache/
+
+# Python の生成物
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# mise のローカル override (個人マシン固有の設定)
+.mise.local.toml
+
+# discover-signals skill の出力先 (extract_signals.py のデフォルト)
+.triage/
