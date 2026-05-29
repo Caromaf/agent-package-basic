@@ -1,0 +1,8 @@
+name: audit-memory
+version: 0.1.0
+description: CLAUDE.md / AGENTS.md / `.claude/rules/*.md` / `.cursor/rules/*.md` を 1 ルールずつ評価し、冗長・重複・常識・機械強制可能・証拠なしの観点で削除/統合/skill 化/hook 化への移行を提案する診断 skill。新規ルールの追加は `triage-improvements` の責務、本 skill は「何を捨てるか」を担当する。
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []

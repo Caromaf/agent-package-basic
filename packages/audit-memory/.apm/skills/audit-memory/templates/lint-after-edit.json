@@ -1,0 +1,15 @@
+{
+  "_comment": "audit-memory が CLAUDE.md の 'lint/format while editing' 系ルールを hook 化する際のひな形。~/.claude/settings.json の hooks.PostToolUse に追記する。",
+  "_usage": "matcher と command は環境に合わせて編集すること。プロジェクトに mise.toml があるなら 'mise run format' が最も汎用。",
+  "PostToolUse": [
+    {
+      "matcher": "Edit|Write|NotebookEdit",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "cd \"$CLAUDE_PROJECT_DIR\" && mise tasks ls 2>/dev/null | grep -q '^format' && mise run format >/dev/null 2>&1 || true"
+        }
+      ]
+    }
+  ]
+}

@@ -7,7 +7,11 @@ yamllint = "latest"
 [tasks.grant-permission]
 description = "packages 内の .sh ファイルに実行権限を付与する"
 quiet = true
-run = ["find ./packages -type f -name \"*.sh\" -exec chmod +x {} +"]
+depends = ["grant-permission"]
+run = '''
+find ./packages ./scripts -type f \
+  \( -name "*.sh" -o -name "*.bash" -o -name "*.py" \) -exec chmod +x {} +
+'''
 
 [tasks.format]
 description = "rumdl, taplo, yamllint, ruff を使ってコードを整形する"
@@ -16,18 +20,20 @@ run = [
   "rumdl fmt",
   "RUST_LOG=warn taplo fmt",
   "yamllint -f auto .",
-  "uvx ruff format packages",
-  "uvx ruff check --fix packages",
+  "uvx ruff format packages scripts",
+  "uvx ruff check --fix packages scripts",
 ]
 
 [tasks.lint]
-description = "rumdl, taplo, yamllint, ruff, ty を使ってコードをチェックする"
+description = "rumdl, taplo, yamllint, ruff, ty, SKILL.md frontmatter を使ってコードをチェックする"
 quiet = true
+depends = ["grant-permission"]
 run = [
   "rumdl check",
   "RUST_LOG=warn taplo fmt --check --diff",
   "yamllint .",
-  "uvx ruff check packages",
-  "uvx ruff format --check packages",
-  "uvx ty check packages",
+  "uvx ruff check packages scripts",
+  "uvx ruff format --check packages scripts",
+  "uvx ty check packages scripts",
+  "uv run --script scripts/check_skill_frontmatter.py",
 ]

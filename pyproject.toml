@@ -16,7 +16,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"packages/*" = [
+"{packages,scripts}/*" = [
   "T201",   # print の利用を許可
   "D103",   # パッケージ内のスクリプトは docstring を必須としない
   "D203",   # D211 と競合するため無効化
@@ -34,7 +34,7 @@ quote-style = "double"
 python-version = "3.13"
 
 [tool.ty.src]
-include = ["packages"]
+include = ["packages", "scripts"]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
