@@ -7,7 +7,6 @@ yamllint = "latest"
 [tasks.grant-permission]
 description = "packages 内の .sh ファイルに実行権限を付与する"
 quiet = true
-depends = ["grant-permission"]
 run = '''
 find ./packages ./scripts -type f \
   \( -name "*.sh" -o -name "*.bash" -o -name "*.py" \) -exec chmod +x {} +
@@ -16,6 +15,7 @@ find ./packages ./scripts -type f \
 [tasks.format]
 description = "rumdl, taplo, yamllint, ruff を使ってコードを整形する"
 quiet = true
+depends = ["grant-permission"]
 run = [
   "rumdl fmt",
   "RUST_LOG=warn taplo fmt",
