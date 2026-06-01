@@ -1,6 +1,6 @@
 name: review-pr
 version: 0.1.0
-description: Review a pull request end-to-end (gh pr view/diff, unit tests, comment audit)
+description: Review a pull request end-to-end with optional architecture-review deep dive for public API, configuration, lifecycle, security, and compatibility changes
 author: Caromaf
 includes: auto
 dependencies:

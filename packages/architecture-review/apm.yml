@@ -1,0 +1,8 @@
+name: architecture-review
+version: 0.1.0
+description: PR や差分を設計原則ごとの観点に分割し、根拠付き finding と具体的な修正戦略へ統合する汎用アーキテクチャレビュー skill
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
