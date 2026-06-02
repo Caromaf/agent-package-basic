@@ -1,0 +1,8 @@
+name: delegate-worktrees
+version: 0.1.0
+description: main agent が master/coordinator として作業を分解し、実作業を複数 subagent に worktree 単位で委任して個別 PR を作らせる workflow skill
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
