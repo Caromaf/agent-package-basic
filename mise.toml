@@ -37,3 +37,8 @@ run = [
   "uvx ty check packages scripts",
   "uv run --script scripts/check_skill_frontmatter.py",
 ]
+
+[tasks.sync-profile-deps]
+description = "dotfiles の各 profile apm.yml に packages/ の不足依存を追記する。報告のみは `mise run sync-profile-deps -- --check` (引数は -- の後ろで python へ渡す)"
+quiet = true
+run = "uv run --script scripts/sync_profile_deps.py"
