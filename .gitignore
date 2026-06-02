@@ -7,6 +7,9 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+# このリポは Python project ではない (pyproject.toml 参照)。スクリプトは PEP 723 inline
+# script で依存を持つため uv.lock は不要。uv run/sync が生成しても commit しない。
+uv.lock
 
 # mise のローカル override (個人マシン固有の設定)
 .mise.local.toml
