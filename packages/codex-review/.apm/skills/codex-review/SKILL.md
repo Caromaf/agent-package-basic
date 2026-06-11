@@ -1,6 +1,6 @@
 ---
 name: codex-review
-description: the agent が書いたコードを Codex CLI (`codex review` / `codex exec`) にレビューさせ、指摘を反映するサイクルを回す必要があるときに使用する。diff レビュー・コミットレビュー・ブランチレビュー・特定ファイルの深いレビューに対応。
+description: the agent が書いたコードを Codex CLI (`codex review` / `codex exec`) にレビューさせ、指摘を反映するサイクルを回す必要があるときに使用する。diff レビュー・コミットレビュー・ブランチレビュー・特定ファイルの深いレビューに対応。loop engineering の checker として `solve-issue` や `delegate-worktrees` の PR 作成前検証に組み込む場合にも使用する。
 ---
 
 # Codex Review - the agent が書いたコードを Codex にレビューさせる
@@ -12,6 +12,28 @@ the agent がコードを編集した後、Codex CLI (`codex review` / `codex ex
 - Codex CLI がインストール済み (`@openai/codex`, volta 経由)
 - OpenAI API キーが設定済み
 - 対象ディレクトリが Git リポジトリであること
+
+## Loop Checker モード
+
+`solve-issue --loop` や `delegate-worktrees` の worker 検証から呼ばれた場合は、レビュー結果を次の処理に渡せる形で短くまとめる。
+
+- blocking / non-blocking / false-positive を分ける。
+- blocking が 1 件でもあれば PR 作成前に修正する。修正できない場合は loop を停止し、理由を報告する。
+- non-blocking は PR 本文の residual risk に残してよいが、同じ種類の指摘が再発するなら skill / lint / hook 化候補として記録する。
+- false-positive は「なぜ採用しないか」を 1 行で残し、差分を増やさない。
+- 重大な指摘の修正後だけ再レビューする。最大 2 周で止め、同じ指摘が繰り返される場合は人間に渡す。
+
+推奨される loop 用サマリ:
+
+```markdown
+Codex review:
+
+- blocking: 0
+- fixed: <件数と要約>
+- deferred: <件数と理由>
+- false-positive: <件数と理由>
+- rerun: yes/no
+```
 
 ## レビューモード
 
@@ -113,6 +135,8 @@ Codex の出力を読み、以下の形式でユーザーに報告する:
 - [ ] 指摘1: 修正する / しない（理由）
 - [ ] 指摘2: 修正する / しない（理由）
 ```
+
+loop checker として呼ばれた場合は、上記に加えて `blocking` 件数を明示する。`blocking > 0` のまま PR を作成しない。
 
 ### Step 4: 指摘を反映
 

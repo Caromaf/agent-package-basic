@@ -1,6 +1,6 @@
 ---
 name: delegate-worktrees
-description: main agent を master/coordinator として動かし、実作業を複数の subagent/worker に git worktree 単位で委任して個別 PR を作らせる必要があるときに使用する。ユーザーが「subagent を使って」「$worktree と subagent で」「master agent として取りまとめて」「複数 worker に分けて PR を作って」などを求めた場合に発火する。
+description: main agent を master/coordinator として動かし、実作業を複数の subagent/worker に git worktree 単位で委任して個別 PR を作らせる必要があるときに使用する。ユーザーが「subagent を使って」「$worktree と subagent で」「master agent として取りまとめて」「複数 worker に分けて PR を作って」などを求めた場合に発火する。loop engineering で Ready Issue キューから複数 worker を起動し、PR 単位で進捗管理する場合にも使用する。
 ---
 
 # Delegate Worktrees
@@ -9,13 +9,25 @@ main agent は実装を抱え込まず、作業分解・優先順位付け・wor
 
 この skill は委任の段取り (分解・並列化・PR 統合) を扱い、worktree の隔離そのものの実装は同梱の `worktree` skill に委ねる関係にある。重複ではなく `delegate-worktrees` が `worktree` を内包して使う。
 
+## Loop Coordinator モード
+
+GitHub Project / Issue キューから継続的に worker を起動する場合は、coordinator が以下を先に決める。
+
+- 取得対象は `ai-auto` と `loop-approved` の両方があり、Status が `Ready` の Issue に限定する。
+- 同時 worker は最大 3 件を初期値にする。過去に安定している repo でも 5 件を超えない。
+- 1 回の loop run で扱う上限、コスト上限、停止条件を決める。
+- shared config、lockfile、migration、public API、認証認可、課金、データ削除を含む Issue は自動 worker から除外する。
+- 状態は GitHub Project と `.ai/loop-state.md` の両方に残す。少なくとも Issue、worker branch、PR URL、検証結果、停止理由を記録する。
+
+worker に渡す実行 skill は原則 `solve-issue <issue> --loop` とし、PR 作成前 checker として `codex-review` を使う。レビューコメント対応は worker に抱え込ませず、PR 作成後に `respond-pr` へ渡す。
+
 ## Coordinator の責務
 
 1. 目的、完了条件、制約、対象 repo を整理し、独立可能な作業単位に分解する。
 2. critical path と依存関係を判断し、並列化できる作業だけ worker に委任する。
 3. 各 worker に branch/worktree/path/ownership/期待成果/検証/PR 作成方針を明確に渡す。
 4. 進捗、PR URL、検証結果、残件を一覧で管理する。
-5. PR 後は必要に応じて `review-pr` などの review skill を実行し、merge 可否と順序を判断する。
+5. PR 後は必要に応じて `codex-review` / `review-pr` / `respond-pr` などの review skill を実行し、merge 可否と順序を判断する。
 6. roadmap/todo/docs は coordinator が全体整合性を見て更新方針を決める。
 
 Coordinator は原則として実装ファイルを編集しない。設計上の追加問題を見つけた場合も、勝手に実装範囲を広げず、roadmap/docs/todo または後続 Issue/PR の候補として記録する。
@@ -69,6 +81,7 @@ Report: PR URL、変更ファイル、検証結果、残件を日本語で報告
 - 他者の変更を revert しない
 - 追加で見つけた設計課題は勝手に実装せず、roadmap/docs/残件として報告する
 - 競合、dirty 状態、ownership 外の変更が必要な場合は作業を広げず coordinator に報告する
+- loop 実行では `solve-issue {issue} --loop` の安全条件を満たさない場合、実装せず停止理由を報告する
 ```
 
 ## PR 後

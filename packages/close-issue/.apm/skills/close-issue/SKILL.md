@@ -1,6 +1,6 @@
 ---
 name: close-issue
-description: マージ済み PR の動作確認、GitHub Projects の Status / End Date 更新、関連 Issue/PR の更新コメント、ローカル/リモートブランチ片付けを一連で実行する必要があるときに使用する。Parent Issue / Sub Issues や別リポジトリにまたがる関連 PR にも対応する。
+description: マージ済み PR の動作確認、GitHub Projects の Status / End Date 更新、関連 Issue/PR の更新コメント、ローカル/リモートブランチ片付けを一連で実行する必要があるときに使用する。Parent Issue / Sub Issues や別リポジトリにまたがる関連 PR にも対応する。loop engineering の終端処理として、PR マージ後に Issue キューの状態を Done へ進める場合にも使用する。
 ---
 
 # Close Issue
@@ -25,11 +25,12 @@ repo の指定がない場合、カレントリポジトリを対象とする。
 ## 引数のパースルール
 
 ```text
-close-issue <Issue 番号 or URL> [--repo <owner/repo>]
+close-issue <Issue 番号 or URL> [--repo <owner/repo>] [--loop]
 ```
 
 - 引数は必須（Issue 番号または GitHub Issue URL）
 - `--repo`: 対象リポジトリを指定（省略時はデフォルト設定 → カレントリポジトリの順で決定）
+- `--loop`: 自動終端処理として実行。安全な後処理だけ行い、人間判断が必要なら停止する
 
 ### 例
 
@@ -43,6 +44,30 @@ close-issue 42 --repo other-org/other-repo
 close-issue https://github.com/org/repo/issues/42
 → URL から Issue 番号とリポジトリを自動抽出して実行
 ```
+
+---
+
+## Loop 終端モード
+
+`--loop` が指定された場合は、マージ済み PR の機械的な後処理だけを自律実行する。
+
+自動実行してよい処理:
+
+- Issue / PR / Project 状態の取得
+- 標準 test / lint の実行
+- Issue body の `## プルリク` 追記、関連 Issue への完了コメント
+- Project Status を Done、End Date を今日へ更新
+- マージ済み head branch の削除
+
+停止する条件:
+
+- PR が未マージ、または複数 PR のどれを正とするか判断できない
+- テストや smoke check が失敗する
+- 未解決 Sub Issue を同時に閉じる必要がありそう
+- 関連 Issue/PR へのコメント内容に仕様判断が必要
+- protected branch / 権限不足 / API 失敗で状態更新が中途半端になる
+
+停止時は途中まで行った処理と未完了処理を報告し、可能なら `.ai/loop-state.md` に残す。
 
 ---
 
@@ -138,6 +163,8 @@ close-issue https://github.com/org/repo/issues/42
    - 問題がある場合は、対応方法をユーザーと相談する
    - 問題がない場合は次のステップへ進む
 
+`--loop` の場合、標準 test / lint が成功し、PR がマージ済みであれば動作確認のユーザー確認を省略してよい。検証手段が無い、または失敗した場合は停止する。
+
 ---
 
 ## Step 3: 関連する Issue と PR の更新
@@ -230,6 +257,8 @@ Step 3-1 で取得した Parent Issue が存在する場合、その Issue body 
 Step 3-1 で取得した Sub Issues のうち、未解決（`state: "OPEN"`）のものがある場合は、Sub Issue の body を確認し、本 Issue だけをクローズしても問題ないかを判断する。
 もし、Sub Issue の内容が本 Issue と密接に関連しており本 Issue のクローズと同時に Sub Issue もクローズすべきであると判断した場合は、Sub Issue にも Step 3-3 と同様の更新を行い、さらに Sub Issue 自体もクローズする。
 逆に Sub Issue が未解決のまま本 Issue をクローズすることが不適切であると判断した場合は、ユーザーに確認を取る（例:「Sub Issue #123 は未解決ですが、本 Issue をクローズしてもよろしいですか？」）。
+
+`--loop` の場合、未解決 Sub Issue を自動クローズしない。Sub Issue が残っていても本 Issue のクローズが明らかに安全な場合だけ続行し、それ以外は停止する。
 
 ### Step 3-6: 関連 Issue の更新
 

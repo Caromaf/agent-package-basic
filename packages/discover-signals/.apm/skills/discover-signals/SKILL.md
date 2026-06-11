@@ -1,6 +1,6 @@
 ---
 name: discover-signals
-description: Claude Code の会話ログ (`~/.claude/projects/**/*.jsonl`) を走査し、ユーザー訂正・繰り返し指示・ループといった「自己改善のシグナル」を抽出して JSON で書き出す必要があるときに使用する。出力は `triage-improvements` skill が読み取り、CLAUDE.md / SKILL.md への反映提案に使う。
+description: Claude Code の会話ログ (`~/.claude/projects/**/*.jsonl`) を走査し、ユーザー訂正・繰り返し指示・ループといった「自己改善のシグナル」を抽出して JSON で書き出す必要があるときに使用する。出力は `triage-improvements` skill が読み取り、CLAUDE.md / SKILL.md への反映提案に使う。loop engineering の学習ループとして、失敗・訂正・繰り返し作業を skill / hook / memory 改善へ戻す場合にも使用する。
 ---
 
 # discover-signals
@@ -14,6 +14,17 @@ Claude Code の会話ログから「次セッション以降のために CLAUDE.
 - ユーザーが繰り返し言わなくて良いように、行動規則を CLAUDE.md / SKILL.md に育てていく
 - 訂正コストの高い箇所をリスト化し、改善 PR の元ネタにする
 - 完全自動化は狙わない。**人間が選別する一覧** を出すことに徹する
+- loop 実行の失敗を次回の harness / skill / hook 改善へ戻す
+
+## Loop 学習ループ
+
+定期実行では、`discover-signals --days 7 --project <name>` で候補を抽出し、`triage-improvements` に渡す。自動で memory や skill を編集しない。
+
+推奨 cadence:
+
+- 週次: 直近 7 日の user correction / tool loop を抽出する
+- 月次: `triage-improvements` と `audit-memory` を組み合わせ、追加と削除をセットで行う
+- 大きな loop 失敗後: 該当 project に絞って即時抽出する
 
 ## 前提
 

@@ -1,6 +1,6 @@
 ---
 name: solve-issue
-description: 会話のコンテキストや既存 Issue から、Issue 起票（または特定）→ ブランチ作成 → 実装 → PR 作成までを一連のワークフローで実行する必要があるときに使用する。GitHub Projects のフィールド (Status / Start Date) や親子 Issue の自動設定にも対応する。
+description: 会話のコンテキストや既存 Issue から、Issue 起票（または特定）→ ブランチ作成 → 実装 → 検証 → PR 作成までを一連のワークフローで実行する必要があるときに使用する。GitHub Projects のフィールド (Status / Start Date) や親子 Issue の自動設定にも対応する。loop engineering の Worker として、ai-auto と loop-approved が付いた低リスク Issue を自動処理する場合にも使用する。
 ---
 
 # Solve Issue
@@ -15,7 +15,7 @@ description: 会話のコンテキストや既存 Issue から、Issue 起票（
 ```bash
 cat ~/.claude/custom-config/create-issue-config.json 2>/dev/null \
   || cat ~/.codex/custom-config/create-issue-config.json 2>/dev/null \
-  || echo '{"repo":"","project":{"owner":"","number":0,"status":"","done_status":"Done","start_date":"today"},"labels":[],"assignee":""}'
+  || echo '{"repo":"","project":{"owner":"","number":0,"status":"","done_status":"Done","start_date":"today"},"labels":[],"loop":{"auto_label":"ai-auto","approved_label":"loop-approved","ready_status":"Ready","in_progress_status":"In progress","waiting_status":"Waiting"},"assignee":""}'
 ```
 
 repo の指定がない場合、カレントリポジトリを対象とする。
@@ -33,6 +33,13 @@ repo の指定がない場合、カレントリポジトリを対象とする。
     "start_date": "today"
   },
   "labels": [],
+  "loop": {
+    "auto_label": "ai-auto",
+    "approved_label": "loop-approved",
+    "ready_status": "Ready",
+    "in_progress_status": "In progress",
+    "waiting_status": "Waiting"
+  },
   "assignee": ""
 }
 ```
@@ -43,16 +50,23 @@ repo の指定がない場合、カレントリポジトリを対象とする。
 - `project.status`: Issue 起票時に設定する Status の値
 - `project.done_status`: Issue クローズ時に設定する Status の値
 - `project.start_date`: `"today"` の場合、起票時に今日の日付を Start Date に設定
+- `loop.auto_label`: 自動実装 Worker の対象にしてよい Issue を表すラベル
+- `loop.approved_label`: 人間が loop 実行を承認済みであることを表すラベル
+- `loop.ready_status`: Worker が取得してよい Project Status
+- `loop.in_progress_status`: Worker が処理開始時に設定する Status
+- `loop.waiting_status`: PR 作成後に設定する Status
 
 ## 引数のパースルール
 
 ```text
-solve-issue [Issue 番号 or URL] [--repo <owner/repo>]
+solve-issue [Issue 番号 or URL] [--repo <owner/repo>] [--loop] [--no-pr]
 ```
 
 - 引数なし → **パターン A**（会話コンテキストから新規 Issue を作成）
 - 引数が数字または GitHub Issue URL → **パターン B**（既存 Issue を解決）
 - `--repo`: 対象リポジトリを指定（省略時はデフォルト設定 → カレントリポジトリの順で決定）
+- `--loop`: 自動 Worker として実行。対象 Issue が安全条件を満たす場合だけユーザー確認を省略する
+- `--no-pr`: PR は作成せず、実装・検証・commit までで停止する
 
 ### 例
 
@@ -65,14 +79,57 @@ solve-issue 42
 
 solve-issue 42 --repo other-org/other-repo
 → other-org/other-repo の Issue #42 を解決
+
+solve-issue 42 --loop
+→ ai-auto + loop-approved の付いた低リスク Issue だけを自動処理
 ```
+
+---
+
+## Loop Worker モード
+
+`--loop` が指定された場合、または `/loop` / cron / GitHub Actions / `delegate-worktrees` から Worker として呼ばれた場合は、以下を守る。
+
+### 取得してよい Issue
+
+既存 Issue を処理する場合だけ自動実行する。引数なしの新規 Issue 作成は loop Worker では行わない。
+
+自動実行してよい条件:
+
+- `ai-auto` と `loop-approved` の両方のラベルが付いている
+- Project Status が `Ready` または設定ファイルの `loop.ready_status`
+- 工数が XS/S 相当、または本文・ラベルから低リスクと判断できる
+- 完了条件と検証方法が本文に書かれている
+- secret、権限、課金、データ削除、migration、本番 deploy、public API 破壊を含まない
+
+条件を満たさない場合は実装せず、理由を報告して終了する。ラベルや Project Status を勝手に昇格しない。
+
+### 自動実行時の確認省略
+
+上記条件を満たす場合のみ、以下のユーザー確認を省略してよい。
+
+- Step 2 の既存 Issue 内容確認
+- Step 4 の実装方針確認
+- PR 作成の確認
+
+ただし、作業中にスコープ拡大・設計判断・破壊的変更・追加権限・未定義の外部サービス連携が必要になったら停止し、Issue に状況をコメントするかユーザーへ報告する。
+
+### 状態更新
+
+Project 設定がある場合は、処理開始時に Status を `In progress`、PR 作成後に `Waiting` へ更新する。該当 option が無い場合は更新をスキップし、報告に残す。
+
+可能なら `.ai/loop-state.md` に「Issue、branch、commit、PR、検証結果、停止理由」を追記する。既存の state ファイルがあればそれを優先する。
+
+### 検証ゲート
+
+PR 作成前に、リポジトリの標準 test / lint / format を実行する。実行できない場合は PR 本文の Test Plan に未実行理由を明記する。`codex-review` skill が利用可能なら、commit 前または PR 作成前に diff レビューを 1 回実行し、妥当な指摘を反映する。
 
 ---
 
 ## Step 1: 計画立案
 
 1. 会話のコンテキストからタイトル・概要・完了条件を整理する
-2. 情報が不足している場合はユーザーに質問する
+2. 情報が不足している場合はユーザーに質問する。`--loop` の場合は質問せず停止理由として報告する
 
 ### 計画に含めるべき項目
 
@@ -84,6 +141,8 @@ solve-issue 42 --repo other-org/other-repo
 
 Step 1 で整理した内容をもとに、Issue を作成するか既存 Issue を指定するかユーザーに確認する。
 新規 Issue を作成する場合は、タイトル・概要・完了条件をユーザーに提示して確認を取る。
+
+`--loop` の場合は新規 Issue を作成しない。既存 Issue 番号または URL が無い場合は停止する。
 
 ### Issue を書くときのガイドライン
 
@@ -233,7 +292,7 @@ EOF
 
 1. `gh issue view {番号} --repo {repo}` で Issue の内容を取得する
 2. Issue のタイトル・本文・ラベル・担当者を確認する
-3. Issue の内容をユーザーに提示し、解決方針を確認する
+3. Issue の内容をユーザーに提示し、解決方針を確認する。`--loop` で Loop Worker モードの条件を満たす場合は確認を省略する
 4. `project` 設定が存在する場合は GitHub Projects のフィールドを設定する（パターン A の手順 1 と同様）
    - **Start Date の決定方法**: `project.start_date` が `"today"` の場合でも、既存 Issue では Issue の作成日（`createdAt`）を使用する。`gh issue view {番号} --repo {repo} --json createdAt --jq '.createdAt[:10]'` で取得する
 
@@ -257,6 +316,7 @@ EOF
 3. Issue 番号とタイトルからブランチ名を生成する（すでにブランチが存在する場合はそのブランチを使用する）
    - 形式: `feature/{issue-number}-{slug}`
    - slug: Issue タイトルを英数字小文字+ハイフンに変換（日本語はローマ字化せず省略し、英単語のみ抽出。適切な英語の slug がない場合はユーザーに確認する）
+   - `--loop` で適切な slug が無い場合は `feature/{issue-number}-loop-worker` を使い、確認待ちで停止しない
    - 例: `feature/42-add-login-feature`
 
 4. ブランチを作成する
@@ -270,7 +330,7 @@ EOF
 ## Step 4: 実装
 
 1. Issue の概要と完了条件に基づいて、実装方針をユーザーに提示する
-2. ユーザーの承認を得てから実装に着手する
+2. ユーザーの承認を得てから実装に着手する。`--loop` で Loop Worker モードの条件を満たす場合は承認済みとして扱う
 3. the agent の実装能力をフル活用してコードを実装する
 
 ### 実装後の確認ポイント
@@ -278,6 +338,7 @@ EOF
 - 完了条件をすべて満たしているか
 - 追加したコードに対して適切なテストが書かれているか
 - コードの品質やスタイルがプロジェクトの基準を満たしているか
+- `--loop` の場合、完了条件を満たせないまま PR を作らない。途中 commit が必要なら `--no-pr` 相当で停止し、理由を報告する
 
 特に mise.toml などのタスクランナーにはコードフォーマット・リンティング・ユニットテストのタスクが含まれていることが多いので、これらを活用してコード品質を担保する。
 
@@ -310,6 +371,9 @@ git commit -m "{コミットメッセージ}"
 - コミットメッセージはコミット規約に従う（リポジトリに規約がある場合はそれに従う）
 - 変更が大きい場合は適宜複数コミットに分割する
 - 実装と関係ないファイルの変更が含まれている場合は、それがコミットに含まれないように注意する
+- `codex-review` を実行した場合は、PR 本文にレビュー結果の要約と対応有無を書く
+
+`--no-pr` の場合はここで停止し、branch、commit、検証結果、PR 未作成理由を報告する。
 
 ブランチをリモートにプッシュする。
 

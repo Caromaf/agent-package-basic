@@ -1,6 +1,6 @@
 ---
 name: triage-improvements
-description: "`discover-signals` が抽出した自己改善シグナル (`.triage/signals-*.json`) を読み込み、CLAUDE.md / SKILL.md への追記提案を生成、ユーザー承認を経て対象ファイルを編集し `git add` まで行うときに使用する。完全自動化はせず、各シグナルごとに採否と文面をユーザーが確認する対話型のフロー。コミット・push・PR 作成は本 skill の責務外 (別途実行する)。"
+description: "`discover-signals` が抽出した自己改善シグナル (`.triage/signals-*.json`) を読み込み、CLAUDE.md / SKILL.md への追記提案を生成、ユーザー承認を経て対象ファイルを編集し `git add` まで行うときに使用する。完全自動化はせず、各シグナルごとに採否と文面をユーザーが確認する対話型のフロー。loop engineering の学習ループとして、失敗を skill / hook / memory に戻す場合にも使用する。コミット・push・PR 作成は本 skill の責務外 (別途実行する)。"
 ---
 
 # triage-improvements
@@ -24,6 +24,17 @@ description: "`discover-signals` が抽出した自己改善シグナル (`.tria
 - `gh pr create` / PR 本文の生成
 
 ユーザーが staged 状態の diff を目視確認できるところで停止することで、人間レビューの介入点を確保する。
+
+## Loop 学習ループでの扱い
+
+自動実行で得た signal でも、採否と文面は人間が確認する。loop の失敗をそのまま CLAUDE.md に足さず、次の順序で逃がす。
+
+1. 既存 skill の手順不足なら、その SKILL.md を更新する。
+2. 機械強制できるなら hook / lint / CI に寄せる。
+3. 特定 repo 固有なら repo の AGENTS.md / CLAUDE.md に寄せる。
+4. 全タスクで必要な判断規則だけをグローバル memory に入れる。
+
+loop が同じ失敗を 2 回以上繰り返した場合は、単なる追記ではなく `audit-memory` も合わせて実行し、古い・弱いルールを削る。
 
 ## 前提
 
