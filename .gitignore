@@ -16,3 +16,6 @@ uv.lock
 
 # discover-signals skill の出力先 (extract_signals.py のデフォルト)
 .triage/
+
+*.zip
+
