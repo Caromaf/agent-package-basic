@@ -130,13 +130,13 @@ The captured pane content includes terminal formatting. Key patterns:
 
 ### Common Issues and Solutions
 
-| Issue | Solution |
-|-------|----------|
-| "Codex CLI not found" | Install Codex in WSL: `npm install -g @openai/codex` |
-| "Authentication failed" | Run `codex login` in WSL to re-authenticate |
-| Timeout waiting for response | Increase timeout or use non-interactive mode |
-| tmux session conflicts | Run `cleanup` before `setup` |
-| Empty response captured | Increase wait time before capture |
+| Issue                        | Solution                                             |
+| ---------------------------- | ---------------------------------------------------- |
+| "Codex CLI not found"        | Install Codex in WSL: `npm install -g @openai/codex` |
+| "Authentication failed"      | Run `codex login` in WSL to re-authenticate          |
+| Timeout waiting for response | Increase timeout or use non-interactive mode         |
+| tmux session conflicts       | Run `cleanup` before `setup`                         |
+| Empty response captured      | Increase wait time before capture                    |
 
 ### Graceful Degradation
 

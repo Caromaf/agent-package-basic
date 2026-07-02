@@ -99,15 +99,15 @@ Present results in this format:
 
 ## Available Commands
 
-| Command | Description |
-| ------- | ----------- |
-| `setup` | Split pane and start Codex on the right |
-| `send "prompt"` | Send prompt to Codex pane |
-| `capture [lines]` | Capture Codex output (default: 100 lines) |
-| `wait [timeout]` | Wait for response to stabilize (default: 60s) |
-| `cleanup` | Close the Codex pane |
-| `status` | Check pane status |
-| `focus` | Switch focus to Codex pane |
+| Command           | Description                                   |
+| ----------------- | --------------------------------------------- |
+| `setup`           | Split pane and start Codex on the right       |
+| `send "prompt"`   | Send prompt to Codex pane                     |
+| `capture [lines]` | Capture Codex output (default: 100 lines)     |
+| `wait [timeout]`  | Wait for response to stabilize (default: 60s) |
+| `cleanup`         | Close the Codex pane                          |
+| `status`          | Check pane status                             |
+| `focus`           | Switch focus to Codex pane                    |
 
 ## Error Handling
 

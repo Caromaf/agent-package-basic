@@ -192,7 +192,7 @@ gh api graphql -f query='
 Step 3-1 で取得した親子関係に加え、Issue body からそれ以外の関連 Issue/PR を抽出する。
 
 1. Issue body 内の `#番号` や GitHub URL（`https://github.com/{owner}/{repo}/issues/{番号}` 等）を抽出する
-   - コードブロック（` ``` ` で囲まれた部分）内の記述は除外する
+   - コードブロック（`` ``` `` で囲まれた部分）内の記述は除外する
    - Step 3-1 で既に取得済みの Parent Issue / Sub Issues は除外する
 2. 残りの参照を以下のルールで分類する
    - **関連 Issue**: `## 依頼元` セクションやその他のセクションにある Issue 参照

@@ -97,13 +97,13 @@ create-issue 軽微な lint 修正 --loop-approved --auto
 
 Issue を loop engineering の状態管理に使う場合、ラベルと Project Status は以下の意味で扱う。
 
-| 状態 | 典型条件 | 次に使う skill |
-| --- | --- | --- |
-| `ai-discovered` + Backlog | `discover` が見つけたが人間未確認 | 人間の triage / `create-issue` 更新 |
-| `loop-approved` + Ready | 人間が実行を承認したが自動実装までは任せない | 手動 `solve-issue` |
-| `ai-auto` + `loop-approved` + Ready | XS/S かつ低リスクで自動実装可能 | `solve-issue` / `delegate-worktrees` |
-| Waiting | PR 作成済み、人間または reviewer 待ち | `review-pr` / `respond-pr` |
-| Done | マージ後の後処理完了 | `close-issue` |
+| 状態                                | 典型条件                                     | 次に使う skill                       |
+| ----------------------------------- | -------------------------------------------- | ------------------------------------ |
+| `ai-discovered` + Backlog           | `discover` が見つけたが人間未確認            | 人間の triage / `create-issue` 更新  |
+| `loop-approved` + Ready             | 人間が実行を承認したが自動実装までは任せない | 手動 `solve-issue`                   |
+| `ai-auto` + `loop-approved` + Ready | XS/S かつ低リスクで自動実装可能              | `solve-issue` / `delegate-worktrees` |
+| Waiting                             | PR 作成済み、人間または reviewer 待ち        | `review-pr` / `respond-pr`           |
+| Done                                | マージ後の後処理完了                         | `close-issue`                        |
 
 自動実行対象は **`ai-auto` と `loop-approved` の両方がある Issue** に限定する。片方だけなら loop Worker は取得しない。
 
