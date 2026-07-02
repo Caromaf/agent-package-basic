@@ -1,6 +1,6 @@
 [tools]
+dprint = "latest"
 rumdl = "latest"
-taplo = "latest"
 uv = "latest"
 yamllint = "latest"
 
@@ -13,24 +13,23 @@ find ./packages ./scripts -type f \
 '''
 
 [tasks.format]
-description = "rumdl, taplo, yamllint, ruff を使ってコードを整形する"
+description = "dprint, rumdl, ruff を使ってコードを整形する"
 quiet = true
 depends = ["grant-permission"]
 run = [
+  "dprint fmt",
   "rumdl fmt",
-  "RUST_LOG=warn taplo fmt",
-  "yamllint -f auto .",
   "uvx ruff format packages scripts",
   "uvx ruff check --fix packages scripts",
 ]
 
 [tasks.lint]
-description = "rumdl, taplo, yamllint, ruff, ty, SKILL.md frontmatter を使ってコードをチェックする"
+description = "dprint, rumdl, yamllint, ruff, ty, SKILL.md frontmatter を使ってコードをチェックする"
 quiet = true
 depends = ["grant-permission"]
 run = [
+  "dprint check",
   "rumdl check",
-  "RUST_LOG=warn taplo fmt --check --diff",
   "yamllint .",
   "uvx ruff check packages scripts",
   "uvx ruff format --check packages scripts",
