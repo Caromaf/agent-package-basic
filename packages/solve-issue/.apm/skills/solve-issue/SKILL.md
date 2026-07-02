@@ -116,9 +116,7 @@ solve-issue 42 --loop
 
 ### 状態更新
 
-Project 設定がある場合は、処理開始時に Status を `In progress`、PR 作成後に `Waiting` へ更新する。該当 option が無い場合は更新をスキップし、報告に残す。
-
-可能なら `.ai/loop-state.md` に「Issue、branch、commit、PR、検証結果、停止理由」を追記する。既存の state ファイルがあればそれを優先する。
+Project 設定がある場合は、処理開始時に Status を `In progress`、PR 作成後に `Waiting` へ更新する。該当 option が無い場合は更新をスキップし、報告を Issue に残す。
 
 ### 検証ゲート
 

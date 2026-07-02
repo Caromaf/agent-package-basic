@@ -67,7 +67,7 @@ close-issue https://github.com/org/repo/issues/42
 - 関連 Issue/PR へのコメント内容に仕様判断が必要
 - protected branch / 権限不足 / API 失敗で状態更新が中途半端になる
 
-停止時は途中まで行った処理と未完了処理を報告し、可能なら `.ai/loop-state.md` に残す。
+停止時は途中まで行った処理と未完了処理を Issue / PR コメントまたは最終報告に集約する。作業ログ・ロードマップ・タスクリストのような状態記録ファイルを repository 内に作成しない。
 
 ---
 
