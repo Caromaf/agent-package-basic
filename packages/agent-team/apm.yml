@@ -1,0 +1,8 @@
+name: agent-team
+version: 0.1.0
+description: メインスレッド起動の Orchestrator を中心に Plan/Explore/Implementor/OutputSummarizer へ委譲する開発オーケストレーション用サブエージェント群。APM `agents` primitive で配信し、Claude Code の `.claude/agents/` に展開される
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
