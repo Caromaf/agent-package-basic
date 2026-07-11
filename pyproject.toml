@@ -36,6 +36,12 @@ python-version = "3.13"
 [tool.ty.src]
 include = ["packages", "scripts"]
 
+# scripts/*.py は PEP 723 inline script として各自 dependencies を宣言して配布されるが、
+# ty はその宣言を読まず `.venv` の site-packages からしか型解決できない。
+# ここでの宣言は配布用パッケージ化ではなく、`ty check` (`uv sync` が作る `.venv`) 向けの型解決専用。
+[dependency-groups]
+dev = ["PyYAML>=6.0.2,<7"]
+
 [tool.ruff.lint.isort]
 combine-as-imports = true
 
