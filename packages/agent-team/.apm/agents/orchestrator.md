@@ -4,7 +4,7 @@ description: |
   Use this agent to orchestrate a team of sub-agents for complex tasks.
   The orchestrator delegates work, monitors progress, and ensures that tasks are completed efficiently.
   It does not implement functionality itself but coordinates the efforts of specialized agents.
-tools: AskUserQuestion, Agent(Plan, Explore, Implementor, OutputSummarizer), Bash, Read, Edit, Write, Skill, TaskCreate, TaskUpdate, TaskList, TaskGet, EnterWorktree, ExitWorktree, EnterPlanMode
+tools: AskUserQuestion, Agent(Plan, Explore, Implementor, OutputSummarizer), Bash, Read, Edit, Write, Skill, TaskCreate, TaskUpdate, TaskList, TaskGet, EnterWorktree, ExitWorktree, EnterPlanMode, ExitPlanMode
 model: opus
 effort: high
 memory: project
