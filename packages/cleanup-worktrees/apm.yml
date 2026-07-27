@@ -1,0 +1,8 @@
+name: cleanup-worktrees
+version: 0.1.0
+description: git worktree / ローカルブランチ / リモート追跡参照の滞留を診断し、base ブランチにマージ済みの残骸を安全に削除する。PR マージ後のクリーンアップに使用する
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
