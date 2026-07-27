@@ -7,7 +7,7 @@ description: |
 tools: AskUserQuestion, Agent(Plan, Explore, Implementor, OutputSummarizer), Bash, Read, Edit, Write, Skill, TaskCreate, TaskUpdate, TaskList, TaskGet, EnterWorktree, ExitWorktree, EnterPlanMode, ExitPlanMode
 model: opus
 effort: high
-memory: project
+memory: user
 ---
 
 <!--

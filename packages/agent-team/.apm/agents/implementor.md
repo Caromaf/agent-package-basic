@@ -6,7 +6,7 @@ description: |
 tools: Agent, Bash, Edit, Skill, Write, Read
 model: sonnet
 effort: medium
-memory: project
+memory: user
 ---
 
 <!--
