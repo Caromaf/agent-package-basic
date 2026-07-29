@@ -13,6 +13,9 @@ line-length = 120
 select = ["ALL"]
 ignore = [
   "COM812", # trailing comma — `ruff format` と競合するため公式に推奨される無効化
+  # CPY001 (missing-copyright-notice): このリポは配布物に copyright header を付ける方針を採っていないため無効化。
+  # rule name (`missing-copyright-notice`) での指定は preview mode 必須のため、非 preview 環境では rule code のまま書く。
+  "CPY001",
 ]
 
 [tool.ruff.lint.per-file-ignores]
