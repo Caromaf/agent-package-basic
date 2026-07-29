@@ -393,8 +393,9 @@ gh pr create \
 
 ## Related Issues
 
-- <issue-url-1>
-- <issue-url-2>
+Closes <解決対象のissue-url>
+
+- <参照のみのissue-url-1>
 - ...
 
 ## Changes
@@ -410,7 +411,10 @@ EOF
 
 - PR タイトルは Issue タイトルを元に作成する
 - `Closes <issue-url>` 形式で Issue を自動クローズ可能にする（クロスリポジトリでも機能する）
+- **`Closes` はキーワードと URL を必ず同一行に書く**。`Closes:` と書いて次行に `- <issue-url>` とリスト記載すると、GitHub の closing keyword として認識されず、マージしても Issue が自動クローズされない（実際に発生した失敗例）。複数 Issue を閉じる場合は `Closes <issue-url>` の行を 1 行ずつ並べる
+- 閉じずに参照だけしたい Issue は、closing keyword を付けずにリスト形式（`- <issue-url>`）で記載する
 - Issue と PR が同じリポジトリの場合でも `<issue-url>` 形式を使用する（一貫性のため）
+- PR マージ後は対象 Issue が自動クローズされたことを確認する
 
 ---
 
