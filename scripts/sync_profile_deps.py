@@ -1,6 +1,6 @@
 #!/usr/bin/env -S uv run --script
 # /// script
-# requires-python = ">=3.13"
+# requires-python = ">=3.14"
 # dependencies = ["PyYAML>=6.0.2,<7"]
 # ///
 """dotfiles の各 profile apm.yml に、packages/ の APM 依存の不足分を追記する。

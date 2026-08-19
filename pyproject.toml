@@ -1,9 +1,30 @@
-# このリポは Python project ではない (APM パッケージ配布用)。
-# packages/*/.apm/skills/*/scripts/*.py は uv inline script (PEP 723) で配布される。
-# このファイルは ruff / ty の共通設定を集約するためだけに置いてある ([project] は意図的に省略)。
+# このリポ自体が Python パッケージとして配布・インストールされることはない ([build-system] は無い)。
+# [project] は「配布物の宣言」ではなく、ty / ruff といった開発ツールが `.venv` を
+# 通して型解決・依存解決できるようにするためだけに存在する。
+#
+# packages/*/.apm/skills/*/scripts/*.py と scripts/*.py は、この pyproject.toml とは
+# 無関係に uv inline script (PEP 723) として自己完結で配布・実行される。
+# 特に packages/ 配下のスクリプトは APM 経由で consumer のマシンへ単体コピーされ、
+# この repo の pyproject.toml も .venv も存在しない環境で動くため、依存は
+# 各スクリプト自身の `# /// script` ブロックに閉じておく必要がある。
+#
+# [dependency-groups] の PyYAML / ty は、上記スクリプトの依存をここへ集約するものではない。
+# `mise run lint` の ty check は `uv run ty check` (この .venv 経由) で実行する必要があり、
+# そのために ty 本体と、ty が各スクリプトの `import yaml` を型解決するための PyYAML を
+# .venv に入れている。`uvx ty check` (ty 自身の隔離ツール環境) では .venv が見えず
+# yaml が unresolved-import になる。ruff は import 解決が不要なので `uvx ruff` のままでよく、
+# dependency-groups に含めない。
+[project]
+name = "agent-package-basic"
+version = "0.0.0"
+requires-python = ">=3.14"
+readme = "README.md"
+
+[dependency-groups]
+dev = ["PyYAML>=6.0.2,<7", "ty"]
 
 [tool.ruff]
-target-version = "py313"
+target-version = "py314"
 extend-exclude = [".apm-cache", ".rumdl_cache"]
 # このリポは markdown 等で行長無制限を方針にしている (CLAUDE.md / .rumdl.toml 参照)。
 # Python も同方針で揃えるため E501 を無効化。意味の通る 1 行で書く。
@@ -32,16 +53,10 @@ ignore = [
 quote-style = "double"
 
 [tool.ty.environment]
-python-version = "3.13"
+python-version = "3.14"
 
 [tool.ty.src]
 include = ["packages", "scripts"]
-
-# scripts/*.py は PEP 723 inline script として各自 dependencies を宣言して配布されるが、
-# ty はその宣言を読まず `.venv` の site-packages からしか型解決できない。
-# ここでの宣言は配布用パッケージ化ではなく、`ty check` (`uv sync` が作る `.venv`) 向けの型解決専用。
-[dependency-groups]
-dev = ["PyYAML>=6.0.2,<7"]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true

@@ -1,16 +1,16 @@
 # agent-package-basic
 
 汎用の AI agent パッケージ集 (公開可)。Claude Code / Codex CLI / Gemini で
-共通利用するスラッシュコマンドや skill を、[APM (Agent Package Manager)](https://microsoft.github.io/apm/)
-で配布する。
+共通利用する skill を、[APM (Agent Package Manager)](https://microsoft.github.io/apm/)
+で配布する。各 skill は `/` メニューからスラッシュコマンドとして明示起動することもできる。
 
 ## レイアウト
 
 ```text
 packages/
-├── review-pr/                # PR レビュー用のスラッシュコマンド
+├── review-pr/                # PR レビュー用の skill
 │   ├── apm.yml
-│   └── .apm/prompts/review-pr.prompt.md
+│   └── .apm/skills/review-pr/SKILL.md
 └── <name>/                   # 他のパッケージも同じ形
 ```
 

@@ -4,6 +4,12 @@ rumdl = "latest"
 uv = "latest"
 yamllint = "latest"
 
+[tasks.init]
+description = "uvを利用して仮想環境を作成し、依存関係を解決します。"
+quiet = true
+depends = ["grant-permission"]
+run = ["uv sync"]
+
 [tasks.grant-permission]
 description = "packages 内の .sh ファイルに実行権限を付与する"
 quiet = true
@@ -15,7 +21,7 @@ find ./packages ./scripts -type f \
 [tasks.format]
 description = "dprint, rumdl, ruff を使ってコードを整形する"
 quiet = true
-depends = ["grant-permission"]
+depends = ["init"]
 run = [
   "dprint fmt",
   "rumdl fmt",
@@ -26,14 +32,14 @@ run = [
 [tasks.lint]
 description = "dprint, rumdl, yamllint, ruff, ty, SKILL.md frontmatter を使ってコードをチェックする"
 quiet = true
-depends = ["grant-permission"]
+depends = ["init"]
 run = [
   "dprint check",
   "rumdl check",
   "yamllint .",
   "uvx ruff check packages scripts",
   "uvx ruff format --check packages scripts",
-  "uvx ty check packages scripts",
+  "uv run ty check packages scripts",
   "uv run --script scripts/check_skill_frontmatter.py",
 ]
 

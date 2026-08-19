@@ -1,6 +1,6 @@
 #!/usr/bin/env -S uv run --script
 # /// script
-# requires-python = ">=3.11"
+# requires-python = ">=3.14"
 # dependencies = []
 # ///
 """git worktree / ブランチ / リモート追跡参照の滞留を分類する診断スクリプト。

@@ -1,6 +1,6 @@
 #!/usr/bin/env -S uv run --script
 # /// script
-# requires-python = ">=3.13"
+# requires-python = ">=3.14"
 # dependencies = []
 # ///
 """CLAUDE.md / AGENTS.md / rules ファイルを機械的に診断し、客観指標を JSON で出す。
