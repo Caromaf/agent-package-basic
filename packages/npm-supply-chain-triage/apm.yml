@@ -1,0 +1,8 @@
+name: npm-supply-chain-triage
+version: 0.1.0
+description: npm / pnpm / yarn のサプライチェーン侵害（Shai-Hulud 系ワーム、IoC 付き侵害パッケージの公開、悪性版の混入等）に関するニュース記事を受け取り、このリポジトリに対応が必要かを調査する必要があるときに使用する。
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []
