@@ -1,6 +1,6 @@
 ---
 name: cleanup-worktrees
-description: git worktree / ローカルブランチ / リモート追跡参照の滞留を診断し、base ブランチにマージ済みの残骸を安全に削除する。PR マージ後のクリーンアップ、`git worktree list` が肥大したとき、`: gone]` ブランチが溜まったときに使用する。dry-run で分類表を提示してからユーザー承認を取り、未マージ・未コミット作業は保護する。
+description: "git worktree / ローカルブランチ / リモート追跡参照の滞留を診断し、base ブランチにマージ済みの残骸を安全に削除する。PR マージ後のクリーンアップ、`git worktree list` が肥大したとき、`: gone]` ブランチが溜まったときに使用する。dry-run で分類表を提示してからユーザー承認を取り、未マージ・未コミット作業は保護する。"
 ---
 
 # cleanup-worktrees

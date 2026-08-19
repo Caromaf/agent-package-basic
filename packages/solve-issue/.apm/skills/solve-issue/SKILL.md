@@ -1,6 +1,8 @@
 ---
 name: solve-issue
 description: 会話のコンテキストや既存 Issue から、Issue 起票（または特定）→ ブランチ作成 → 実装 → 検証 → PR 作成までを一連のワークフローで実行する必要があるときに使用する。GitHub Projects のフィールド (Status / Start Date) や親子 Issue の自動設定にも対応する。loop engineering の Worker として、ai-auto と loop-approved が付いた低リスク Issue を自動処理する場合にも使用する。
+argument-hint: "[Issue 番号 or URL] [--repo <owner/repo>]"
+allowed-tools: Bash(gh issue create:*), Bash(gh issue view:*), Bash(gh issue list:*), Bash(gh issue edit:*), Bash(gh label list:*), Bash(gh project:*), Bash(gh api:*), Bash(gh pr create:*), Bash(gh repo view:*), Bash(git checkout:*), Bash(git switch:*), Bash(git push:*), Bash(git add:*), Bash(git commit:*), Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(date:*), Bash(cat:*)
 ---
 
 # Solve Issue

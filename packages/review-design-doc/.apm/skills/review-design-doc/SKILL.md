@@ -1,6 +1,8 @@
 ---
 name: review-design-doc
 description: 実装を伴う設計方針や仕様を記述したデザインドキュメントの Pull Request を概要把握 → diff 確認 → 既存実装との整合性検証 → コミット内容レビューの流れでレビューする必要があるときに使用する。
+argument-hint: "<PR Number or URL>"
+allowed-tools: Bash(gh pr view:*), Bash(gh pr diff:*), Bash(gh issue view:*), Bash(gh issue list:*), Bash(gh pr checkout:*), Read(CLAUDE.md), Read(AGENTS.md), Bash(make:*), Bash(mise:*), Bash(docker:*), Bash(ripgrep:*), Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(cat:*), Bash(ls:*), Bash(cd:*)
 ---
 
 # Review Pull Request About Design Docs

@@ -1,6 +1,8 @@
 ---
 name: review-pr
 description: プルリクエストを、PR本文・diff・関連Issue・テスト・動作確認・コミット履歴からレビューする必要があるときに使用する。public API、設定、DI、factory、adapter、protocol、migration、security、error contract など設計リスクを含む変更では architecture-review と連携して深掘りする。loop engineering の checker として、solve-issue / delegate-worktrees が作った PR を独立レビューする場合にも使用する。
+argument-hint: "<PR Number or URL>"
+allowed-tools: Bash(gh pr view:*), Bash(gh pr diff:*), Bash(gh issue view:*), Bash(gh issue list:*), Bash(gh pr checkout:*), Bash(gh pr comment:*), Read(CLAUDE.md), Read(AGENTS.md), Bash(make:*), Bash(mise:*), Bash(docker:*), Bash(ripgrep:*), Bash(rg:*), Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(cat:*), Bash(ls:*), Bash(cd:*)
 ---
 
 # Review Pull Request

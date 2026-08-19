@@ -1,6 +1,8 @@
 ---
 name: discover
 description: 「使いにくい」「遅い気がする」のような曖昧な課題意識を出発点に、コードベース（とスクリーンショット）を分析して具体的な改善 Issue 草案を生成・起票する必要があるときに使用する。UI/UX、パフォーマンス、セキュリティ、コード品質、アーキテクチャ、機能の各観点で重点調査を切り替える。定期実行や loop engineering で改善候補を発見し、GitHub Issue キューへ流す場合にも使用する。
+argument-hint: "<改善したいこと> [--repo <owner/repo>] [--screenshot <path>]"
+allowed-tools: Bash(gh issue create:*), Bash(gh issue view:*), Bash(gh issue list:*), Bash(gh issue edit:*), Bash(gh label list:*), Bash(gh project:*), Bash(gh api:*), Bash(gh repo view:*), Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(date:*), Bash(cat:*), Bash(find:*), Bash(wc:*)
 ---
 
 # Discover

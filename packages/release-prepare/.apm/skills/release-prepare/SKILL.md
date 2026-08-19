@@ -1,6 +1,9 @@
 ---
 name: release-prepare
 description: 最後の git タグからのコミットと実ファイル差分を分類し、CHANGELOG.md の `## [Unreleased]` セクションを Keep a Changelog 形式で更新する必要があるときに使用する。コミットやタグ付けは行わず、CHANGELOG.md のみを編集する。
+argument-hint: "[sinceTag?]"
+allowed-tools: >
+  Bash(git describe:*), Bash(git log:*), Bash(grep:*), Bash(awk:*), Bash(sed:*), Bash(date:*), Bash(tr:*), Bash(git rev-list:*), Bash(git rev-parse:*), Bash(test -f:*), Bash(echo:*), Bash(cat:*), Bash(head:*), Bash(tail:*), Bash(cd:*), Bash(pwd:*), Bash(basename:*), Bash(dirname:*), Bash(touch:CHANGELOG.md), Read(CHANGELOG.md), Write(CHANGELOG.md)
 ---
 
 # Prepare CHANGELOG.md

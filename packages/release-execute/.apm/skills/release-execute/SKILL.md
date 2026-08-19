@@ -1,6 +1,12 @@
 ---
 name: release-execute
 description: CHANGELOG.md の `## [Unreleased]` セクションを新バージョン (`## [X.Y.Z] - YYYY-MM-DD`) に昇格し、SemVer タグの作成・リリースコミット・git push までを一連で行う必要があるときに使用する。`release-prepare` で更新した CHANGELOG.md がある前提。
+allowed-tools: >
+  Bash(git tag:*), Bash(git add:*), Bash(git commit:*), Bash(git push:*), Bash(git describe:*),
+  Bash(git status:*), Bash(git diff:*), Bash(git branch:*), Bash(git log:*), Bash(git rev-list:*),
+  Bash(git rev-parse:*), Bash(grep:*), Bash(awk:*), Bash(sed:*), Bash(date:*), Bash(tr:*),
+  Bash(test -f:*), Bash(echo:*), Bash(cat:*), Bash(head:*), Bash(tail:*), Bash(cd:*),
+  Bash(pwd:*), Bash(basename:*), Bash(dirname:*), Read(CHANGELOG.md), Write(CHANGELOG.md)
 ---
 
 # Update CHANGELOG.md and Create Git Tag

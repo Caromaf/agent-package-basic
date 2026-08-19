@@ -1,6 +1,8 @@
 ---
 name: ux-review
 description: AI ペルソナを与えて Playwright MCP で対象サービスを実際に触らせ、タスク実施時の詰まりや気づきを構造化レポートとしてまとめる必要があるときに使用する。`init` サブコマンドで雛形展開、本実行でレビューセッションを行う 2 モード構成。
+argument-hint: "init <target-path> | <service-path> <persona> [scenario]"
+allowed-tools: Read, Write, Edit, Bash(mkdir:*), Bash(cp:*), Bash(ls:*), Bash(date:*), Bash(find:*), Bash(claude mcp list:*), mcp__playwright__browser_navigate, mcp__playwright__browser_click, mcp__playwright__browser_type, mcp__playwright__browser_press_key, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_wait_for, mcp__playwright__browser_resize, mcp__playwright__browser_navigate_back, mcp__playwright__browser_select_option, mcp__playwright__browser_hover, mcp__playwright__browser_fill_form, mcp__playwright__browser_console_messages, mcp__playwright__browser_close
 ---
 
 # UX Review

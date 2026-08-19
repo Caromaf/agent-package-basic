@@ -1,6 +1,8 @@
 ---
 name: close-issue
 description: マージ済み PR の動作確認、GitHub Projects の Status / End Date 更新、関連 Issue/PR の更新コメント、ローカル/リモートブランチ片付けを一連で実行する必要があるときに使用する。Parent Issue / Sub Issues や別リポジトリにまたがる関連 PR にも対応する。loop engineering の終端処理として、PR マージ後に Issue キューの状態を Done へ進める場合にも使用する。
+argument-hint: "<Issue 番号 or URL> [--repo <owner/repo>]"
+allowed-tools: Bash(gh issue view:*), Bash(gh issue close:*), Bash(gh issue edit:*), Bash(gh issue comment:*), Bash(gh pr view:*), Bash(gh pr list:*), Bash(gh pr comment:*), Bash(gh project:*), Bash(gh api:*), Bash(gh repo view:*), Bash(git switch:*), Bash(git pull:*), Bash(git branch:*), Bash(git push:*), Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(make:*), Bash(mise:*), Bash(date:*), Bash(cat:*)
 ---
 
 # Close Issue

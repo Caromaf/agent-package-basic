@@ -1,6 +1,8 @@
 ---
 name: worktree
 description: git worktree で作業ディレクトリを分離し、未コミット変更の競合を防ぎながら別ブランチで作業する必要があるときに使用する。`EnterWorktree` / `ExitWorktree` 専用ツールが利用できないランタイムでも、素の `git worktree` コマンドで作成・保持・削除を一貫して扱える。
+argument-hint: "[worktree 名] [--exit] [--exit-remove]"
+allowed-tools: Bash(git worktree:*), Bash(git switch:*), Bash(git checkout:*), Bash(git merge:*), Bash(git branch:*), Bash(git log:*), Bash(git status:*), Bash(git diff:*), Bash(git push:*), Bash(git pull:*), Bash(git add:*), Bash(git commit:*), Bash(git stash:*), Bash(rm -rf:*), EnterWorktree, ExitWorktree
 ---
 
 # Worktree

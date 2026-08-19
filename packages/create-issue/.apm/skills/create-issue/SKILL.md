@@ -1,6 +1,8 @@
 ---
 name: create-issue
 description: 会話のコンテキストや引数から GitHub Issue を起票し、GitHub Projects のフィールド (Status / Start Date) や親子関係を自動で設定する必要があるときに使用する。複数リポジトリを横断する場合にも対応する。loop engineering のタスクキューとして Issue を作成し、ai-discovered / ai-auto / loop-approved などのラベルで自動実行可否を表す場合にも使用する。
+argument-hint: "<Issue タイトル> [--repo <owner/repo>] [--label <label>] [--assignee <user>] [--status <status>]"
+allowed-tools: Bash(gh issue create:*), Bash(gh issue view:*), Bash(gh issue list:*), Bash(gh label list:*), Bash(gh project:*), Bash(gh api:*), Bash(date:*), Bash(cat:*)
 ---
 
 # Issue 起票スキル

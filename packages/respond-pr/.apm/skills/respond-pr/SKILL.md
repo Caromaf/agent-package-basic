@@ -1,6 +1,8 @@
 ---
 name: respond-pr
 description: "GitHub PR のレビュースレッドを取得し、返信コメントと `resolveReviewThread` GraphQL mutation まで使って完走クローズする skill。`gh` CLI には resolve 相当コマンドが無いため、reply + resolve のループは GraphQL 直接呼び出しが必須で、このノウハウは本 skill にしかない。TRIGGER when: ユーザーが「PR のレビュー対応」「PR #N のコメント捌いて」「未 resolve スレッドを片付けて」「CodeRabbit / Gemini / Codex のレビュー対応」「レビューに返信して resolve」等を依頼した時、または「PR に bot から指摘が N 件来た」「スレッドが open のまま」「レビュー受けたけど返信忘れそう」等の状況説明があった時。loop engineering で PR 作成後の checker-response ループを回す場合にも使用する。自分で `gh pr view --comments` と手動 commit で捌こうとすると (1) `isResolved` 状態が取れない (2) resolve もできない (3) reply 忘れが頻発、のため必ず本 skill を起動すること。SKIP: 自分が PR を review する側（「この PR を review してほしい」「コードの気になる点を指摘して」）は review-pr / codex-review 側。PR 作成・マージ・レビュアー指名も別スキル。"
+argument-hint: "[<PR Number or URL>] — 省略時はカレントブランチの PR"
+allowed-tools: Bash(gh pr view:*), Bash(gh pr checks:*), Bash(gh pr diff:*), Bash(gh api:*), Bash(git status:*), Bash(git log:*), Bash(git diff:*), Bash(git fetch:*), Bash(git pull:*), Bash(git push:*), Bash(git switch:*), Bash(git checkout:*), Bash(git add:*), Bash(git commit:*), Bash(git rev-parse:*), Bash(git merge-base:*), Bash(make:*), Bash(mise:*), Bash(date:*), Bash(cat:*), Bash(ls:*), Bash(cd:*), Bash(bash ~/.claude/skills/respond-pr/scripts/*.sh), Bash(~/.claude/skills/respond-pr/scripts/*.sh), Bash(bash ~/.agents/skills/respond-pr/scripts/*.sh), Bash(~/.agents/skills/respond-pr/scripts/*.sh)
 ---
 
 # PR レビュー対応スキル
@@ -256,8 +258,10 @@ skill 完走時は以下を報告する：
 
 ## 参考スクリプト
 
-- `~/.claude/skills/respond-pr/scripts/list_unresolved_threads.sh <pr-number>` — 未 resolve スレッドを JSON で出力
-- `~/.claude/skills/respond-pr/scripts/resolve_thread.sh <thread-id>` — スレッドを resolve
-- `~/.claude/skills/respond-pr/scripts/reply_to_thread.sh <comment-id> <body>` — スレッドに返信
+配備先は Claude Code なら `~/.claude/skills/respond-pr/scripts/...`、Codex CLI / Gemini CLI なら `~/.agents/skills/respond-pr/scripts/...` を使う。
+
+- `list_unresolved_threads.sh <pr-number> [owner/repo]` — 未 resolve スレッドを JSON で出力
+- `reply_to_thread.sh <pr-number> <first-comment-database-id> <body> [owner/repo]` — スレッドに返信
+- `resolve_thread.sh <thread-node-id>` — スレッドを resolve
 
 これらは GraphQL / gh api のラッパー。直接呼んでも良い。

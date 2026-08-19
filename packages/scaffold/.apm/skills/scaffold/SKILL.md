@@ -1,6 +1,8 @@
 ---
 name: scaffold
 description: サービス構築の初期段階で方向性から技術設計ドキュメント（ADR 風）と段階的な Issue セットを生成する必要があるときに使用する。Organization 内の既存リポジトリの技術スタックや CI/CD パターンを調査して一貫性のある提案を行う。loop engineering で大きな目的を Issue キューへ分解し、後続の solve-issue / delegate-worktrees に渡す場合にも使用する。
+argument-hint: "<作りたいものの説明> [--repo <owner/repo>] [--reference <参考リポジトリ>]"
+allowed-tools: Bash(gh repo view:*), Bash(gh issue create:*), Bash(gh issue view:*), Bash(gh issue list:*), Bash(gh issue edit:*), Bash(gh label list:*), Bash(gh project:*), Bash(gh api:*), Bash(git status:*), Bash(git log:*), Bash(date:*), Bash(cat:*), Bash(find:*), Bash(wc:*)
 ---
 
 # Scaffold
