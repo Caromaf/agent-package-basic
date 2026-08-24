@@ -19,7 +19,7 @@ GitHub Project / Issue キューから継続的に worker を起動する場合�
 - shared config、lockfile、migration、public API、認証認可、課金、データ削除を含む Issue は自動 worker から除外する。
 - 状態は GitHub Project / Issue / PR / CI / 最終報告に集約する。作業ログ・ロードマップ・タスクリストのような状態記録ファイルを repository 内に作成しない。
 
-worker に渡す実行 skill は原則 `solve-issue <issue> --loop` とし、PR 作成前 checker として `codex-review` を使う。レビューコメント対応は worker に抱え込ませず、PR 作成後に `respond-pr` へ渡す。
+worker に渡す実行 skill は原則 `solve-issue <issue> --base {base_branch} --branch {branch_name} --loop` とし、PR 作成前 checker として `codex-review` を使う。coordinator が作成した child branch / worktree をそのまま使わせ、レビューコメント対応は worker に抱え込ませず、PR 作成後に `respond-pr` へ渡す。
 
 ## Coordinator の責務
 
@@ -31,6 +31,12 @@ worker に渡す実行 skill は原則 `solve-issue <issue> --loop` とし、PR 
 6. durable docs が必要な場合だけ、coordinator が「開発者・一般ユーザーに必要な導入/利用情報」または「ソースコードや git log から得られない ADR/意思決定」に該当するか判断する。
 
 Coordinator は原則として実装ファイルを編集しない。設計上の追加問題を見つけた場合も、勝手に実装範囲を広げず、後続 Issue/PR の候補として報告する。
+
+### 複数 PR の依存 DAG と stack lifecycle
+
+複数の Issue / PR に分割した場合、coordinator は実装開始前に各 node（Issue、branch、PR）、依存先、検証条件、merge 順を一覧化し、有向非巡回グラフ（Directed Acyclic Graph）として管理する。依存関係がない node は共通の base branch から通常 PR として並列実行する。依存関係がある node だけを stacked PR とし、後続 PR の base は直前の branch に設定する。依存関係を理由に全 PR を 1 本の stack に入れてはならない。
+
+stack の lifecycle は coordinator が管理する。前段 PR が merge されたら、後続 PR を最新の base branch に rebase し、必要なら PR の base を新しい branch（通常は default branch または残存する stack 親）へ retarget する。rebase 後は差分、CI、レビュー状態を再確認し、依存 DAG と現在の base / head を最終報告に反映する。親が未 merge の間は、後続 PR の変更を前段の差分と混同しないよう、PR 本文に `base` と依存 PR を明記する。
 
 ## Worker の責務
 
@@ -44,7 +50,7 @@ Coordinator は原則として実装ファイルを編集しない。設計上�
 
 worktree の作り方は実行ランタイムによって 2 系統に分ける。同梱の `worktree` skill と同じ方針で、native 機能を優先しつつ非対応ランタイムにフォールバックする。
 
-- **Claude Code ランタイム (優先)**: worker を `isolation: worktree` で起動し、worktree の生成と後片付けをランタイムに委ねる。手動 `git worktree add` は書かない。native worktree は parent session の `HEAD` ではなく **default branch から分岐**し、変更が無ければ自動でクリーンアップされる点に注意する。直前の未マージ作業の上に積みたい場合はこの分岐起点が合わないので、その作業は直列化して扱う。
+- **Claude Code ランタイム (優先)**: worker を `isolation: worktree` で起動し、worktree の生成と後片付けをランタイムに委ねる。手動 `git worktree add` は書かない。native worktree は parent session の `HEAD` ではなく default branch から分岐し、変更が無ければ自動でクリーンアップされる点に注意する。stacked PR は native worktree の起点を指定できないため直列化し、前段 PR の branch を base にした後続 worker を、前段 branch から明示的に作成して起動する。前段 branch が利用可能になるまで後続 worker を起動しない。
 - **native isolation 非対応ランタイム (Codex 等)**: worker prompt 内で手動 `git worktree` を使う。worktree は元 repo の親ディレクトリ配下に置く。例: `<repo>-worktrees/<branch-name>`。worker 中断時に orphan worktree が残りうるので、coordinator が掃除責務を持つ。
 
 共通ルール:
@@ -53,6 +59,8 @@ worktree の作り方は実行ランタイムによって 2 系統に分ける�
 - branch 名は作業内容が分かる hyphen-case にする。
 - worker 間で write scope を分離する。共有ファイルや衝突しやすいファイルは同時編集しない。
 - dirty な main worktree から作業を始める必要がある場合は、coordinator に状態を報告してから判断する。
+- worker 起動前に coordinator は `git fetch origin {base_branch}` を実行し、`git show-ref --verify refs/remotes/origin/{base_branch}` で base branch の存在を確認する。存在しない場合は worker を起動せず、base branch を決定し直す。
+- stacked PR の後続 branch を作るときは `git fetch` で前段 branch を取得し、前段 branch を明示した `git worktree add -b {child_branch} {worktree_path} {parent_branch}` 相当の操作で作成する。前段が merge された後の rebase / retarget は coordinator が行う。
 
 ## 並列化ルール
 
@@ -68,11 +76,13 @@ worktree の作り方は実行ランタイムによって 2 系統に分ける�
 あなたは worker subagent です。main agent は coordinator として全体管理します。
 
 Repo: {repo_path}
-Base branch: {main_branch}
+Base branch: {base_branch}
+Parent branch (stacked の場合): {parent_branch_or_none}
 Worktree: 専用 worktree 内だけで作業し、main worktree には書き込まない (Claude Code では isolation: worktree で起動済み。手動運用時は新規 git worktree を作成する)
 Branch: {branch_name}
 Ownership: {変更してよい範囲。触らない範囲も明記}
 Task: {実装内容と完了条件}
+Execution: `solve-issue {issue} --base {base_branch} --branch {branch_name} --loop` として実行する。stacked の場合は親 branch を fetch 済みであることを確認してから開始する。`solve-issue` は current branch と base の祖先関係を検証するため、worker 内で branch を作り直したり base へ switch したりしない
 Verification: {実行すべきテスト/lint/手動確認}
 PR: commit/push して PR を作成する。PR 本文には変更内容、検証、残件を書く
 Report: PR URL、変更ファイル、検証結果、残件を日本語で報告する

@@ -2,7 +2,7 @@
 name: solve-issue
 description: 会話のコンテキストや既存 Issue から、Issue 起票（または特定）→ ブランチ作成 → 実装 → 検証 → PR 作成までを一連のワークフローで実行する必要があるときに使用する。GitHub Projects のフィールド (Status / Start Date) や親子 Issue の自動設定にも対応する。loop engineering の Worker として、ai-auto と loop-approved が付いた低リスク Issue を自動処理する場合にも使用する。
 argument-hint: "[Issue 番号 or URL] [--repo <owner/repo>]"
-allowed-tools: Bash(gh issue create:*), Bash(gh issue view:*), Bash(gh issue list:*), Bash(gh issue edit:*), Bash(gh label list:*), Bash(gh project:*), Bash(gh api:*), Bash(gh pr create:*), Bash(gh repo view:*), Bash(git checkout:*), Bash(git switch:*), Bash(git push:*), Bash(git add:*), Bash(git commit:*), Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(date:*), Bash(cat:*)
+allowed-tools: Bash(gh issue create:*), Bash(gh issue view:*), Bash(gh issue list:*), Bash(gh issue edit:*), Bash(gh label list:*), Bash(gh project:*), Bash(gh api:*), Bash(gh pr create:*), Bash(gh repo view:*), Bash(git checkout:*), Bash(git switch:*), Bash(git branch:*), Bash(git fetch:*), Bash(git rev-parse:*), Bash(git merge-base:*), Bash(git push:*), Bash(git add:*), Bash(git commit:*), Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(date:*), Bash(cat:*)
 ---
 
 # Solve Issue
@@ -61,12 +61,14 @@ repo の指定がない場合、カレントリポジトリを対象とする。
 ## 引数のパースルール
 
 ```text
-solve-issue [Issue 番号 or URL] [--repo <owner/repo>] [--loop] [--no-pr]
+solve-issue [Issue 番号 or URL] [--repo <owner/repo>] [--base <branch>] [--branch <branch>] [--loop] [--no-pr]
 ```
 
 - 引数なし → **パターン A**（会話コンテキストから新規 Issue を作成）
 - 引数が数字または GitHub Issue URL → **パターン B**（既存 Issue を解決）
 - `--repo`: 対象リポジトリを指定（省略時はデフォルト設定 → カレントリポジトリの順で決定）
+- `--base`: PR の base branch を指定（省略時はリポジトリの default branch。stacked PR の後続では直前の branch を指定）
+- `--branch`: 既に coordinator が作成した branch / worktree を使用する。指定時は current branch が一致することと、base branch が current branch の祖先であることを検証し、Step 3 で base branch へ switch したり branch を作り直したりしない
 - `--loop`: 自動 Worker として実行。対象 Issue が安全条件を満たす場合だけユーザー確認を省略する
 - `--no-pr`: PR は作成せず、実装・検証・commit までで停止する
 
@@ -136,6 +138,16 @@ PR 作成前に、リポジトリの標準 test / lint / format を実行する�
 - 完了条件とそれを満たすために必要な具体的なタスク
 - 課題を達成したことをどのように確認するか（例: 追加するテストケースの内容や、動作確認の手順）
 - ユニットテストや統合テスト・E2Eテストの追加が必要な場合は、その内容を計画に含める
+
+### PR 分割ゲート
+
+計画を確定し実装を始める前に、変更を 1 つの Issue / PR にまとめるべきかを必ず判定する。次の観点を Issue の作業単位ごとに確認する。
+
+- **独立価値**: その作業だけで利用者・レビュー・リリース上の価値が成立するか
+- **独立検証**: 他の作業を待たずにテスト、lint、動作確認を実行できるか
+- **依存関係**: 他の作業の成果物・API・schema・設定がないと実装または検証できないか
+
+独立価値と独立検証があり、依存がない作業は別 Issue / branch / PR に分割する。分割判定になった場合は、分割単位・依存関係・base branch・検証方法を含む分割計画を先に提示し、ユーザー確認後に子 Issue を起票するか `delegate-worktrees` の coordinator へ handoff する。その時点で現在の単一 Issue の実装を停止し、この skill の 1 Issue → 1 branch → 1 PR を開始してはならない。依存がある作業は依存順を明示し、必要な場合は `delegate-worktrees` の coordinator に複数 PR の DAG と stack lifecycle の管理を委ねる。この skill の責務は引き続き 1 Issue → 1 branch → 1 PR の実装に限定する。分割せず単一 PR にする場合は、分割しない理由（独立価値・独立検証・依存の評価結果）を Issue または PR 本文に記載する。
 
 ## Step 2: Issue の準備
 
@@ -300,26 +312,38 @@ EOF
 
 ## Step 3: ブランチ作成
 
-1. デフォルトブランチを自動検出する
+1. PR の base branch を決定する。`--base` が指定されていればその branch を使用し、未指定ならデフォルトブランチを自動検出する。指定 branch が存在しない場合は作業を開始せず報告する。
 
    ```bash
    gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name'
    ```
 
-2. デフォルトブランチの最新状態を取得する
+2. `--branch` が指定されている場合は、coordinator が用意した worktree の current branch が指定 branch と一致することを確認し、base branch がその branch の祖先であることを検証する。
 
    ```bash
-   git switch {デフォルトブランチ}
+   test "$(git branch --show-current)" = "{branch_name}"
+   git fetch origin "{base_branch}"
+   git rev-parse --verify "origin/{base_branch}"
+   git rev-parse --verify "{branch_name}"
+   git merge-base --is-ancestor "origin/{base_branch}" "{branch_name}"
+   ```
+
+   検証に失敗した場合は作業を開始せず coordinator に報告する。検証に成功した場合は base branch へ switch / pull せず、現在の branch をそのまま実装に使う。
+
+3. `--branch` が指定されていない場合だけ、base branch の最新状態を取得する
+
+   ```bash
+   git switch {base_branch}
    git pull
    ```
 
-3. Issue 番号とタイトルからブランチ名を生成する（すでにブランチが存在する場合はそのブランチを使用する）
+4. `--branch` が指定されていない場合、Issue 番号とタイトルからブランチ名を生成する（すでにブランチが存在する場合はそのブランチを使用する）
    - 形式: `feature/{issue-number}-{slug}`
    - slug: Issue タイトルを英数字小文字+ハイフンに変換（日本語はローマ字化せず省略し、英単語のみ抽出。適切な英語の slug がない場合はユーザーに確認する）
    - `--loop` で適切な slug が無い場合は `feature/{issue-number}-loop-worker` を使い、確認待ちで停止しない
    - 例: `feature/42-add-login-feature`
 
-4. ブランチを作成する
+5. `--branch` が指定されていない場合だけブランチを作成する
 
    ```bash
    git switch -c feature/{issue-number}-{slug}
@@ -378,7 +402,7 @@ git commit -m "{コミットメッセージ}"
 ブランチをリモートにプッシュする。
 
 ```bash
-git push -u origin feature/{issue-number}-{slug}
+git push -u origin {branch_name}
 ```
 
 PR を作成する。
@@ -386,7 +410,8 @@ PR を作成する。
 ```bash
 gh pr create \
   --repo {repo} \
-  --base {デフォルトブランチ} \
+  --base {base_branch} \
+  --head {branch_name} \
   --title "{PR タイトル}" \
   --body "$(cat <<'EOF'
 ## Summary
@@ -428,6 +453,6 @@ EOF
 ✅ Issue → 実装 → PR の一連のワークフローが完了しました。
 
 - Issue: {Issue URL}
-- Branch: feature/{issue-number}-{slug}
+- Branch: {branch_name}
 - PR: {PR URL}
 ```

@@ -1,6 +1,6 @@
 name: respond-pr
 version: 0.1.0
-description: GitHub PR のレビュースレッドを取得し、返信コメント投稿と `resolveReviewThread` GraphQL mutation まで完走させる multi-file skill。SKILL.md + scripts/{list_unresolved_threads.sh, reply_to_thread.sh, resolve_thread.sh} の 4 ファイル構成
+description: GitHub PR のレビュースレッドを状態分類し、各スレッドへ返信する multi-file skill。コード修正後は再確認待ちとして unresolved のまま残し、自動 resolve された場合も `unresolveReviewThread` で open に戻す。修正不要・質問回答のみの場合だけ `resolveReviewThread` GraphQL mutation を実行する。SKILL.md + scripts/{list_unresolved_threads.sh, reply_to_thread.sh, resolve_thread.sh, unresolve_thread.sh} の 5 ファイル構成
 author: Seika139
 includes: auto
 dependencies:
