@@ -26,6 +26,14 @@ dependencies:
 `#v0.1.0` の部分は repo の git tag。タグを切ることでマシン横断で
 バージョン pin できる。
 
+repo の全 package を一括で取り込む場合 (root `apm.yml` の `dependencies:` ブロック (curated aggregator) 経由):
+
+```yaml
+dependencies:
+  apm:
+    - Caromaf/agent-package-basic#main
+```
+
 ## インストール (利用者側)
 
 ```bash
@@ -40,6 +48,7 @@ apm install -g Caromaf/agent-package-basic/packages/review-pr#v0.1.0
 パッケージ追加・修正の流れ:
 
 1. ブランチを切って編集 (main 直 push しない)
+   - 新しい package を追加したら、`packages/` に追加するだけでなく、root `apm.yml` の `dependencies.apm` ブロックにも追記すること。追加を忘れると一括取り込みに反映されない。
 2. PR を作って merge
 3. `git tag vX.Y.Z` してタグ push
 4. 利用側の `apm.yml` の `#vX.Y.Z` を上げて `apm install -g` で反映
