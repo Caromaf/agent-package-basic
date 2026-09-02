@@ -1,0 +1,41 @@
+name: agent-package-basic
+version: 0.1.0
+description: 汎用の AI agent パッケージ集 (公開可)
+author: Caromaf
+
+dependencies:
+  apm:
+    - Caromaf/agent-package-basic/packages/architecture-review#main
+    - Caromaf/agent-package-basic/packages/audit-memory#main
+    - Caromaf/agent-package-basic/packages/breaking-change-in-php-framework#main
+    - Caromaf/agent-package-basic/packages/cleanup-worktrees#main
+    - Caromaf/agent-package-basic/packages/close-issue#main
+    - Caromaf/agent-package-basic/packages/codex-review#main
+    - Caromaf/agent-package-basic/packages/commit-message#main
+    - Caromaf/agent-package-basic/packages/create-issue#main
+    - Caromaf/agent-package-basic/packages/delegate-worktrees#main
+    - Caromaf/agent-package-basic/packages/discover#main
+    - Caromaf/agent-package-basic/packages/discover-signals#main
+    - Caromaf/agent-package-basic/packages/framework-changelog#main
+    - Caromaf/agent-package-basic/packages/frontend-aesthetics#main
+    - Caromaf/agent-package-basic/packages/gh-link-subissues#main
+    - Caromaf/agent-package-basic/packages/gh-unlink-subissue#main
+    - Caromaf/agent-package-basic/packages/mise-tasks#main
+    - Caromaf/agent-package-basic/packages/npm-supply-chain-triage#main
+    - Caromaf/agent-package-basic/packages/release-execute#main
+    - Caromaf/agent-package-basic/packages/release-prepare#main
+    - Caromaf/agent-package-basic/packages/respond-pr#main
+    - Caromaf/agent-package-basic/packages/review-design-doc#main
+    - Caromaf/agent-package-basic/packages/review-pr#main
+    - Caromaf/agent-package-basic/packages/scaffold#main
+    - Caromaf/agent-package-basic/packages/solve-issue#main
+    - Caromaf/agent-package-basic/packages/triage-improvements#main
+    - Caromaf/agent-package-basic/packages/use-interesting-fonts#main
+    - Caromaf/agent-package-basic/packages/ux-review#main
+    - Caromaf/agent-package-basic/packages/with-codex-skills#main
+    - Caromaf/agent-package-basic/packages/worktree#main
+    - git: Caromaf/agent-package-basic
+      path: packages/agent-team
+      ref: main
+      targets: [claude]
+  mcp: []
