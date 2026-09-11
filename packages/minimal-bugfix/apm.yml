@@ -1,0 +1,8 @@
+name: minimal-bugfix
+version: 0.1.0
+description: 再現と原因の根拠を確立し、必要十分な修正と回帰検証でバグ修正を完了する
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Minimal Bugfix"
+  short_description: "根拠付きで最小限のバグ修正を行う"
+  default_prompt: "Use $minimal-bugfix to reproduce, fix, and verify this bug with the smallest justified change."
+policy:
+  allow_implicit_invocation: false

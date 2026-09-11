@@ -1,0 +1,6 @@
+interface:
+  display_name: "Converge Codebase"
+  short_description: "発散したコードを目標状態へ収束させる"
+  default_prompt: "Use $converge-codebase to plan, migrate, verify, and complete this codebase convergence task."
+policy:
+  allow_implicit_invocation: false

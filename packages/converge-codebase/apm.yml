@@ -1,0 +1,8 @@
+name: converge-codebase
+version: 0.1.0
+description: 発散したコードベースを目標状態へ段階的に移行し、旧経路と一時物を撤去して収束させる
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []

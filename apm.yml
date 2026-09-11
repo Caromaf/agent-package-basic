@@ -12,6 +12,7 @@ dependencies:
     - Caromaf/agent-package-basic/packages/close-issue#main
     - Caromaf/agent-package-basic/packages/codex-review#main
     - Caromaf/agent-package-basic/packages/commit-message#main
+    - Caromaf/agent-package-basic/packages/converge-codebase#main
     - Caromaf/agent-package-basic/packages/create-issue#main
     - Caromaf/agent-package-basic/packages/delegate-worktrees#main
     - Caromaf/agent-package-basic/packages/discover#main
@@ -21,6 +22,7 @@ dependencies:
     - Caromaf/agent-package-basic/packages/gh-link-subissues#main
     - Caromaf/agent-package-basic/packages/gh-unlink-subissue#main
     - Caromaf/agent-package-basic/packages/mise-tasks#main
+    - Caromaf/agent-package-basic/packages/minimal-bugfix#main
     - Caromaf/agent-package-basic/packages/npm-supply-chain-triage#main
     - Caromaf/agent-package-basic/packages/release-execute#main
     - Caromaf/agent-package-basic/packages/release-prepare#main
