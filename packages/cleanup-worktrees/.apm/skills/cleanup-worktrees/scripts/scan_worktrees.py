@@ -783,9 +783,7 @@ def build_self_check_tree(root: Path) -> tuple[Path, list[Worktree]]:
     other_admin = root / "other-repo-git" / "worktrees" / "wt"
     other_admin.mkdir(parents=True)
     (container / "other-repo-live" / "repo").mkdir(parents=True)
-    (container / "other-repo-live" / "repo" / ".git").write_text(
-        f"gitdir: {other_admin}", encoding="utf-8"
-    )
+    (container / "other-repo-live" / "repo" / ".git").write_text(f"gitdir: {other_admin}", encoding="utf-8")
     # gitdir が消えた孤児 worktree は husk 側 (has_git=True で理由を書き分ける)。
     (container / "other-repo-dead" / "repo").mkdir(parents=True)
     (container / "other-repo-dead" / "repo" / ".git").write_text(
@@ -842,8 +840,7 @@ def self_check() -> int:
         assert shown_parent == str(container), f"表示パスが正規化されている: {shown_parent}"
         # 走査エラーがあれば生成時点で保護側に倒る不変条件 (iterdir だけが失敗する
         # 状態は移植性のあるフィクスチャで作れないため、型の側で直接確かめる)。
-        errored = Husk(path="x", files=1, total_bytes=0, top_entries=[], has_source=False,
-                       has_git=False, walk_errors=1)
+        errored = Husk(path="x", files=1, total_bytes=0, top_entries=[], has_source=False, has_git=False, walk_errors=1)
         assert errored.has_source, "走査エラーがあるのに has_source が False のままになる"
 
         for name, want in (

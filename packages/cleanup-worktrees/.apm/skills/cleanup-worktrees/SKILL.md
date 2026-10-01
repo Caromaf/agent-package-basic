@@ -13,13 +13,13 @@ description: "git worktree / ローカルブランチ / リモート追跡参照
 
 **削除の可否は 5 つの事実だけで決まる。** 推測を混ぜない。
 
-| 事実                      | 取得方法                                          | 意味                                     |
-| ------------------------- | ------------------------------------------------- | ---------------------------------------- |
-| マージ済みか              | `git merge-base --is-ancestor <head> <base>`      | 成果が base に取り込まれているか         |
-| 未コミット変更の**中身**  | `git status --porcelain` + `git diff --numstat`   | 失う作業があるか                         |
-| worktree に checkout 中か | `git worktree list --porcelain` の `branch`       | ブランチ削除が可能か                     |
-| locked か                 | 同上の `locked` 行                                | 他セッションが使用中の宣言               |
-| **登録されているか**      | 親ディレクトリの実体 − `git worktree list`        | 登録解除だけ済んだ孤児 (husk) かどうか   |
+| 事実                      | 取得方法                                        | 意味                                   |
+| ------------------------- | ----------------------------------------------- | -------------------------------------- |
+| マージ済みか              | `git merge-base --is-ancestor <head> <base>`    | 成果が base に取り込まれているか       |
+| 未コミット変更の**中身**  | `git status --porcelain` + `git diff --numstat` | 失う作業があるか                       |
+| worktree に checkout 中か | `git worktree list --porcelain` の `branch`     | ブランチ削除が可能か                   |
+| locked か                 | 同上の `locked` 行                              | 他セッションが使用中の宣言             |
+| **登録されているか**      | 親ディレクトリの実体 − `git worktree list`      | 登録解除だけ済んだ孤児 (husk) かどうか |
 
 ### 安全側に倒す判定
 

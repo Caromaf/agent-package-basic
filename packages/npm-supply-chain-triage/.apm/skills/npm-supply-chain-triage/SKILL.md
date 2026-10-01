@@ -101,11 +101,11 @@ npm / yarn の場合も同様の考え方で `package-lock.json` の `packages` 
 
 ## 照合結果
 
-| レイヤー | 対象 | 結果 | 備考 |
-| --- | --- | --- | --- |
-| 依存グラフ照合 | lockfile 全ファイル | 一致 0 件（網羅率 100%） | |
-| 取得痕跡 | cache / store / node_modules | 痕跡なし | |
-| 端末 IoC スキャン | dropper / hooks / exfil repo | 痕跡なし | |
+| レイヤー          | 対象                         | 結果                     | 備考 |
+| ----------------- | ---------------------------- | ------------------------ | ---- |
+| 依存グラフ照合    | lockfile 全ファイル          | 一致 0 件（網羅率 100%） |      |
+| 取得痕跡          | cache / store / node_modules | 痕跡なし                 |      |
+| 端末 IoC スキャン | dropper / hooks / exfil repo | 痕跡なし                 |      |
 
 ## 陰性だった IoC 項目
 
