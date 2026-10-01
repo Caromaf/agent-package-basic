@@ -41,6 +41,9 @@ ignore = [
 "{packages,scripts}/*" = [
   "T201", # print の利用を許可
   "D103", # パッケージ内のスクリプトは docstring を必須としない
+  "D105", # D103 と同方針。magic method にも docstring を必須としない
+  "S101", # スクリプトは self-check (assert ベースのテスト) を内蔵するため許可。tests/ に S101 を許す ruff の慣例と同じ
+  "PLR2004", # self-check の期待値比較はリテラル直書きの方が読みやすい
   "D203", # D211 と競合するため無効化
   "D213", # D212 と競合するため無効化
   "D403", # 1 単語目を大文字にする規則（日本語 docstring と相性が悪い）
