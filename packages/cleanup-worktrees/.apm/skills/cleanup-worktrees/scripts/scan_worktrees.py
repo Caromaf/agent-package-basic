@@ -12,6 +12,7 @@
 from __future__ import annotations
 
 import argparse
+import io
 import json
 import os
 import stat
@@ -856,7 +857,7 @@ def main() -> int:
     # Windows の locale encoding (cp932) では日本語の理由文が化けるので UTF-8 に固定する。
     # 出力が差し替えられている実行環境 (StringIO など) には reconfigure が無い。
     for stream in (sys.stdout, sys.stderr):
-        if hasattr(stream, "reconfigure"):
+        if isinstance(stream, io.TextIOWrapper):
             stream.reconfigure(encoding="utf-8")
 
     parser = argparse.ArgumentParser(description=__doc__)
