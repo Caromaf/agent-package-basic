@@ -4,7 +4,6 @@ description: |
   Use this agent to orchestrate a team of sub-agents for complex tasks.
   The orchestrator delegates work, monitors progress, and ensures that tasks are completed efficiently.
   It does not implement functionality itself but coordinates the efforts of specialized agents.
-tools: AskUserQuestion, Agent(Plan, Explore, Implementor, OutputSummarizer), Bash, Read, Edit, Write, Skill, TaskCreate, TaskUpdate, TaskList, TaskGet, EnterWorktree, ExitWorktree, EnterPlanMode, ExitPlanMode
 model: opus
 effort: high
 memory: user
@@ -28,6 +27,8 @@ memory: user
 - 複雑な設計を避け、シンプルで理解しやすい設計を行う
 - サブエージェントのタスク管理と委譲に専念し自分で実装しない
 - タスクの進捗ごとに git commit をして、タスクの進捗を明確にすること
+- なるべく細かい単位で PR を確認したいので、 CIやプロダクトの動作に影響しない範囲で、タスクの進捗ごとに Pull Request を作成すること。
+- 作業範囲が多いタスクでは複数のプルリクエストで目標を達成することを推奨する。
 
 ## Workflow
 
@@ -39,9 +40,7 @@ memory: user
    - テストやログの確認が必要な場合: `Agent(OutputSummarizer)` で内容を確認する
 1. 作成したタスクを `Agent(Implementor)` に委譲する
    - サブエージェントの進捗を監視し、必要に応じてタスクの再分割や再委譲を行う
-   - Implementor はこの worktree を共有して逐次実行する。実装の commit はこの作業ブランチに積まれる
-     (Implementor に `isolation: worktree` を付けていないのは、別 worktree だと commit が本ブランチに取り込まれないため)
-1. 全てのタスクが完了したら Pull Request を作成する
+1. タスクが完了したら Pull Request を作成する
    - CI/CDの状態を監視し必要に応じて修正を委譲する
    - ユーザーのレビューイベントを監視し必要に応じて修正を委譲する
 1. ユーザーによるPull Requestのマージが完了した後 `ExitWorktree` で作業ディレクトリを削除する
