@@ -14,7 +14,7 @@ mise の task / 設定を扱うときは以下を必ず守ること。
 主要ページ:
 
 - Tasks 全般: <https://mise.jdx.dev/tasks/>
-- File tasks (`mise/tasks/*.sh` 形式): <https://mise.jdx.dev/tasks/file-tasks.html>
+- File tasks (`mise/tasks/*.sh` 形式、Windows の shebang と `.ps1` の組み合わせ): <https://mise.jdx.dev/tasks/file-tasks.html>
 - Task arguments (`#USAGE` コメントによる flag 宣言): <https://mise.jdx.dev/tasks/task-arguments.html>
 - TOML tasks (`mise.toml` 内記述): <https://mise.jdx.dev/tasks/toml-tasks.html>
 - Running tasks: <https://mise.jdx.dev/tasks/running-tasks.html>
@@ -49,6 +49,13 @@ shell ロジックは独立したファイルに分離する。これにより:
 - `mise/tasks/*.sh`: `mise run <task>` で直接呼ばれるエントリポイント。先頭に `#MISE description=...` コメントを置く
 - `mise/scripts/*.sh`: tasks から `bash mise/scripts/foo.sh` で呼ばれるヘルパー。共通処理を切り出す
 - `mise/common.sh`: 複数 script で再利用される関数（`print_red`, `select_one` 等）
+
+### Windows での実行
+
+- Windows を対象にする場合も、Git for Windows に含まれる Bash など、`bash` を実行できる環境があるものとしてよい
+- Windows では shebang が task の認識と interpreter の起動に必要なため、Bash task に `#!/usr/bin/env bash` を付ける。mise を PowerShell、IDE、CI などから起動する場合も、そのプロセスの `PATH` から `bash` を解決できるようにする
+- OS の違いにより Bash task が Windows で動かないことが明らかな場合は、同じディレクトリに、拡張子を除いて同じ名前になる `.sh` と `.ps1` を置く（例: `build.sh` と `build.ps1`）。mise は Windows では `.ps1` を、Linux と macOS では `.sh` を同じ task 名で実行する
+- Linux と macOS では `.ps1` に実行権限を付けない。実行権限があると `.ps1` も file task として扱われ、`.sh` と同じ task 名で競合する
 
 ### `#MISE` / `#USAGE` コメントの基本形
 
