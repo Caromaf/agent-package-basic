@@ -1,0 +1,4 @@
+schema_version: 1.1
+name: mise-tasks-windows-file-task-pair
+expected_outcome: >-
+  prompt.md に記載した初期状態から、エージェントは mise/tasks に同名の machine-name.sh と machine-name.ps1 の file task を作り、どちらの OS 系統でも同じタスク名を使えるようにする。Windows では ProductName を取得し、指定された Unix 非対応時の動作を実装する。既存の ready タスクを維持し、PowerShell ファイルに Unix の実行ビットを付けない。エージェントはソースとファイル配置を確認した内容を説明し、Windows 専用の動作を実行したと主張しない。

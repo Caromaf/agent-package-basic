@@ -1,0 +1,4 @@
+schema_version: 1.1
+name: mise-tasks-separates-task-logic
+expected_outcome: >-
+  prompt.md に記載した初期状態から、エージェントは mise.toml を宣言的に保ち、複数段階の処理を mise/tasks 内の file task に記述する。タスクは VERSION と、最初の親コミットの履歴順に並べた2件のマージ後のコミット件名を、指定された出力先に書き込む。ネットワークサービスには接続せず、既存の ready タスクを維持する。エージェントは関連する検証方法を報告する。

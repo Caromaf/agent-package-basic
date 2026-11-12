@@ -13,12 +13,12 @@ mise の task / 設定を扱うときは以下を必ず守ること。
 
 主要ページ:
 
-- Tasks 全般: <https://mise.jdx.dev/tasks/>
-- File tasks (`mise/tasks/*.sh` 形式、Windows の shebang と `.ps1` の組み合わせ): <https://mise.jdx.dev/tasks/file-tasks.html>
-- Task arguments (`#USAGE` コメントによる flag 宣言): <https://mise.jdx.dev/tasks/task-arguments.html>
-- TOML tasks (`mise.toml` 内記述): <https://mise.jdx.dev/tasks/toml-tasks.html>
-- Running tasks: <https://mise.jdx.dev/tasks/running-tasks.html>
-- 環境変数 / tools: <https://mise.jdx.dev/configuration/>
+- [Tasks 全般](https://mise.jdx.dev/tasks/)
+- [File tasks (`mise/tasks/*.sh` 形式、Windows の shebang と `.ps1` の組み合わせ)](https://mise.jdx.dev/tasks/file-tasks.html)
+- [Task arguments (`#USAGE` コメントによる flag 宣言)](https://mise.jdx.dev/tasks/task-arguments.html)
+- [TOML tasks (`mise.toml` 内記述)](https://mise.jdx.dev/tasks/toml-tasks.html)
+- [Running tasks](https://mise.jdx.dev/tasks/running-tasks.html)
+- [環境変数 / tools](https://mise.jdx.dev/tasks/task-configuration.html)
 
 不明な挙動（例: `#USAGE flag` の `<value>` 引数の shell 変数展開、`depends` の動作、`quiet` / `hide` の効果など）に遭遇したら、コードを書く前に該当ページを `WebFetch` で読むこと。
 
@@ -99,14 +99,31 @@ source "${ROOT_DIR}/mise/common.sh"
 
 - `set -euo pipefail` を必ず付ける
 - `ROOT_DIR` 経由でプロジェクトルートに `cd` してから処理する
-- 共通関数は `mise/common.sh` から source する
+- 共通関数は `mise/common.sh` から source する（必要に応じて `./assets/common.sh` からコピーしてプロジェクトに組み込む）
 - `shellcheck` を通す（pre-commit hook が走る前提）
 
-## 5. 編集後のチェック
+## 5. shell スクリプト内に Python や TypeScript を書かない
+
+タスク内で複雑な処理、特定の言語に依存する処理は、`mise/scripts` に Python や TypeScript などの専用スクリプトに切り出す。
+shell スクリプト内に直接書くと、可読性が下がり、テストや再利用が難しくなる。
+
+## 6. サブコマンド的 task の書き方
+
+`mise/tasks/dir-name/command.sh` という書き方は `mise run dir-name:command` という書式で実行する。
+しかし task名に `:` を含めると Tab キーの補完がうまく効かないため、 `./references/schedule.sh` のような書き方を推奨する。（本来は `mise/tasks/schedule.sh` に配置する）
+
+この書き方には以下のメリットがある。
+
+- Tab キーでの補完が効く
+- サブコマンド形式で処理がまとまるので、タスクの数が爆発的に増えにくい
+- `mise run 扱う対象 処理内容` の形式で自然に読める
+- 扱う対象だけを知っておけば、処理内容は fzf で選択できる
+
+## 7. 編集後のチェック
 
 実装後に必ず以下を確認:
 
 - `bash -n <file>`: 構文エラー検出
 - `shellcheck <file>`: lint
 - `mise tasks` または `mise run <task> --help`: task 認識と `#USAGE` 反映の確認
-- 必要なら実際に `mise run <task>` を実行して動作確認
+- 副作用がないタスクなら実際に `mise run <task>` を実行して動作確認する
