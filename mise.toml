@@ -22,7 +22,7 @@ run = 'find ./packages ./scripts -type f \( -name "*.sh" -o -name "*.bash" -o -n
 
 [tasks.upgrade]
 description = "mise tools の依存関係を最新にする"
-run = ["mise upgrade", "mise lock"]
+run = ["mise lock --bump", "mise install --locked"]
 
 [tasks.format]
 description = "dprint, rumdl, ruff, tombi を使ってコードを整形する"
