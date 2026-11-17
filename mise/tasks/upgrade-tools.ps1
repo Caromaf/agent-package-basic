@@ -4,7 +4,7 @@ $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot "../..")).Path
 Push-Location -LiteralPath $projectRoot
 $exitCode = 0
 try {
-    mise upgrade --bump --no-global
+    mise upgrade --no-global
     $exitCode = $LASTEXITCODE
 } finally {
     Pop-Location
