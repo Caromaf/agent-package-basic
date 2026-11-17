@@ -65,6 +65,8 @@ gh pr view "$ARGUMENT" --json title,body,url,author,baseRefName,baseRefOid,headR
 - 変更規模と変更ファイルの分布。
 - base/head branch と OID。以降の diff、checkout、履歴、行番号は記録した OID と一致させる。
 
+**特にプルリク本文にリンクが含まれている場合は、そこにレビューの背景となる情報が記載されている可能性が高い。必ずリンク先の一次情報を確認すること。**
+
 PR の JSON から `BASE_OID` と `HEAD_OID` を記録する。checkout やテストの前に現在のブランチと作業状態を確認する。
 
 ```bash
