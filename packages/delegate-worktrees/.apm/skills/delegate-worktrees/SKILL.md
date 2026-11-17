@@ -21,6 +21,10 @@ GitHub Project / Issue キューから継続的に worker を起動する場合�
 
 worker に渡す実行 skill は原則 `solve-issue <issue> --base {base_branch} --branch {branch_name} --loop` とし、PR 作成前 checker として `codex-review` を使う。coordinator が作成した child branch / worktree をそのまま使わせ、レビューコメント対応は worker に抱え込ませず、PR 作成後に `respond-pr` へ渡す。
 
+`ai-work` / `ai-decision` Issue を worker に割り当てる前に、coordinator 自身が `work-loop` skill に同梱された `scripts/work_queue.py explain <issue> --repo <owner/repo> --json` を実行し、終了コード 0 かつ JSON の `state` が `ready` であることを確認する。CLI の場所は現在のランタイムが読み込んだ `work-loop/SKILL.md` のインストール先から解決し、repo 内の相対パスを推測しない。CLI が見つからない、出力を解析できない、`blocked` / `needs-replan` / `unknown`、その他の判定失敗があれば worker を起動しない。`ai-decision` Issue は人間の判断待ちであり、実装 worker に割り当てない。
+
+`ready` は依存と再計画 gate の通過だけを示す。`ai-auto` + `loop-approved`、Project `Ready`、低リスク等の既存 Worker 条件は別途確認する。Decision Issue を close しただけでは再開せず、Work 本文の `decision-applied` URL / revision / closed-at 記録と `needs-replan` ラベルの整理を coordinator が確認する。handoff 後も `solve-issue` の worker が着手直前に canonical preflight を再実行し、どれか一つでも失敗したら停止する。
+
 ## Coordinator の責務
 
 1. 目的、完了条件、制約、対象 repo を整理し、独立可能な作業単位に分解する。
@@ -82,7 +86,7 @@ Worktree: 専用 worktree 内だけで作業し、main worktree には書き込�
 Branch: {branch_name}
 Ownership: {変更してよい範囲。触らない範囲も明記}
 Task: {実装内容と完了条件}
-Execution: `solve-issue {issue} --base {base_branch} --branch {branch_name} --loop` として実行する。stacked の場合は親 branch を fetch 済みであることを確認してから開始する。`solve-issue` は current branch と base の祖先関係を検証するため、worker 内で branch を作り直したり base へ switch したりしない
+Execution: `solve-issue {issue} --base {base_branch} --branch {branch_name} --loop` として実行する。stacked の場合は親 branch を fetch 済みであることを確認してから開始する。`solve-issue` は current branch と base の祖先関係を検証するため、worker 内で branch を作り直したり base へ switch したりしない。`ai-work` Issue は着手直前に `work-loop` skill の `scripts/work_queue.py explain {issue} --repo {repo} --json` を実行し、CLI が成功して JSON の state が ready の場合だけ続行する。パスが見つからない、state が不明、または gate が未通過なら停止する
 Verification: {実行すべきテスト/lint/手動確認}
 PR: commit/push して PR を作成する。PR 本文には変更内容、検証、残件を書く
 Report: PR URL、変更ファイル、検証結果、残件を日本語で報告する
@@ -92,6 +96,7 @@ Report: PR URL、変更ファイル、検証結果、残件を日本語で報告
 - 追加で見つけた設計課題は勝手に実装せず、後続 Issue/PR 候補として報告する
 - 競合、dirty 状態、ownership 外の変更が必要な場合は作業を広げず coordinator に報告する
 - loop 実行では `solve-issue {issue} --loop` の安全条件を満たさない場合、実装せず停止理由を報告する
+- `ai-work` Issue は work-loop canonical preflight が ready でない場合、実装せず停止理由を報告する
 ```
 
 ## PR 後

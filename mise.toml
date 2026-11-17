@@ -1,8 +1,12 @@
 [tools]
 dprint = "latest"
+python = "3.14"
 rumdl = "latest"
 uv = "latest"
-yamllint = "latest"
+yamllint = { version = "latest", python = "3.14" }  # yamllint が Python 3.15 で動作しないため、Python 3.14 を指定する
+
+[env]
+UV_PYTHON = { value = "{{ tools.python.path }}", tools = true }
 
 [tasks.init]
 description = "uvを利用して仮想環境を作成し、依存関係を解決します。"

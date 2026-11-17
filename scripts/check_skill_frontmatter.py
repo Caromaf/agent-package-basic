@@ -177,14 +177,14 @@ def main() -> int:
             failures.append((skill_md, problems))
 
     if failures:
-        print(f"❌ SKILL.md frontmatter lint 失敗: {len(failures)}/{len(skills)} 件", file=sys.stderr)
+        print(f"ERROR: SKILL.md frontmatter lint 失敗: {len(failures)}/{len(skills)} 件", file=sys.stderr)
         for path, problems in failures:
             rel = path.relative_to(REPO_ROOT)
             for reason in problems:
                 print(f"  {rel}: {reason}", file=sys.stderr)
         return 1
 
-    print(f"✅ SKILL.md frontmatter lint OK: {len(skills)} 件")
+    print(f"OK: SKILL.md frontmatter lint OK: {len(skills)} 件")
     return 0
 
 

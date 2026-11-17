@@ -35,6 +35,7 @@ dependencies:
     - Caromaf/agent-package-basic/packages/use-interesting-fonts#main
     - Caromaf/agent-package-basic/packages/ux-review#main
     - Caromaf/agent-package-basic/packages/with-codex-skills#main
+    - Caromaf/agent-package-basic/packages/work-loop#main
     - Caromaf/agent-package-basic/packages/worktree#main
     - git: Caromaf/agent-package-basic
       path: packages/agent-team

@@ -100,6 +100,7 @@ solve-issue 42 --loop
 
 自動実行してよい条件:
 
+- `ai-work` ラベルが付いており、Work-loop canonical preflight が終了コード 0 かつ JSON の `state: "ready"` を返す
 - `ai-auto` と `loop-approved` の両方のラベルが付いている
 - Project Status が `Ready` または設定ファイルの `loop.ready_status`
 - 工数が XS/S 相当、または本文・ラベルから低リスクと判断できる
@@ -199,7 +200,8 @@ EOF
 )"
 ```
 
-1. 起票後、`project` 設定が存在する場合は GitHub Projects のフィールドを設定する
+1. 起票後、Issue に `ai-work` / `ai-decision` ラベルを付けた場合は「Work-loop canonical preflight」を実行する。通過するまで `project` 設定の更新やブランチ作成に進まない。
+2. `project` 設定が存在する場合は GitHub Projects のフィールドを設定する
    - `project.owner` と `project.number` で対象の GitHub Project を特定する
    - **Status**: `project.status` の値に設定
    - **Start Date**: `project.start_date` が `today` の場合は `date +%Y-%m-%d` で今日の日付を取得して設定
@@ -281,7 +283,7 @@ EOF
 
    **注意**: Start Date は b. で取得した `fieldValues` 内の `ProjectV2ItemFieldDateValue` を確認し、`date` が既に設定されている場合は更新をスキップする。Start Date の上書きは行わない。
 
-2. 会話のコンテキストから親 Issue が特定できる場合は、ユーザーに確認の上、親子関係を設定する
+3. 会話のコンテキストから親 Issue が特定できる場合は、ユーザーに確認の上、親子関係を設定する
 
    ```bash
    # 親 Issue の node ID を取得
@@ -304,9 +306,30 @@ EOF
 
 1. `gh issue view {番号} --repo {repo}` で Issue の内容を取得する
 2. Issue のタイトル・本文・ラベル・担当者を確認する
-3. Issue の内容をユーザーに提示し、解決方針を確認する。`--loop` で Loop Worker モードの条件を満たす場合は確認を省略する
-4. `project` 設定が存在する場合は GitHub Projects のフィールドを設定する（パターン A の手順 1 と同様）
+3. Issue の内容をユーザーに提示し、解決方針を確認する。Loop Worker モードの条件を満たす場合は確認を省略する
+4. Loop Worker モードでは `ai-work` ラベルが必須であり、欠けていたら停止する。ラベルの有無にかかわらず「Work-loop canonical preflight」を実行し、通過するまで `project` 設定の更新やブランチ作成に進まない。Manual flow でも `ai-work` / `ai-decision` ラベルが付いている場合は preflight を実行する。
+5. `project` 設定が存在する場合は GitHub Projects のフィールドを設定する（パターン A の手順 2 と同様）
    - **Start Date の決定方法**: `project.start_date` が `"today"` の場合でも、既存 Issue では Issue の作成日（`createdAt`）を使用する。`gh issue view {番号} --repo {repo} --json createdAt --jq '.createdAt[:10]'` で取得する
+
+### Work-loop canonical preflight
+
+Issue の実装着手前、branch / worktree の作成前、Project Status の更新前に、既存 Issue のラベルを確認して次の canonical gate を実行する。`--loop`、`/loop`、cron、GitHub Actions、`delegate-worktrees` を含むすべての Loop Worker に適用し、パターン A で起票した Issue に `ai-work` / `ai-decision` を付けた場合も対象に含める。
+
+1. `ai-decision` ラベルが付いた Issue は人間の判断用であり、実装 worker にしない。Loop Worker は `ai-work` ラベルがなければ停止する。Manual flow で `ai-work` / `ai-decision` のどちらもない Issue は従来どおり扱う。
+
+2. `ai-work` ラベルが付いた Issue は、現在のランタイムが読み込んだ `work-loop` skill のインストール先から sibling の `scripts/work_queue.py` を解決し、次を実行する。`work-loop` package が見つからない、Python 3.12 以上が使えない、またはスクリプトのパスを確定できない場合は停止する。repo のカレントディレクトリから `.apm/...` を推測してはならない。
+
+   ```bash
+   python "<installed work-loop skill directory>/scripts/work_queue.py" explain {issue-number-or-url} --repo {repo} --json
+   ```
+
+   このPythonコマンドは、実際の同梱スクリプトへのパスを含めてランタイムの標準コマンド承認フローで実行する。`Bash(python:*)` のような包括許可は追加しない。承認されない場合は停止する。
+
+3. JSON が有効で、終了コードが 0 かつ `state` が完全一致で `ready` のときだけ処理を続ける。`blocked`、`needs-replan`、`unknown`、CLI の非 0 終了、実行失敗、不正 JSON、必要な `state` / `reason` の欠落はすべて fail-closed で停止し、branch 作成や Project 更新を行わない。`reason` を coordinator / user にそのまま報告する。
+
+4. `--loop` Worker は `ai-work` の canonical preflight に加えて、本 skill に記載した `ai-auto` + `loop-approved`、Project `Ready`、低リスク等の条件もすべて満たさなければならない。canonical `ready` は既存 Worker 条件を置き換えない。
+
+Loop Worker の条件を満たすには `ai-work` ラベルと canonical preflight の成功が必須である。ラベルがない Issue を `--loop` や他の Loop Worker 経路から manual Issue flow にフォールバックさせない。`work-loop` CLI の Issue 契約は `work-loop` skill の `references/issue-contract.md` に従う。
 
 ---
 

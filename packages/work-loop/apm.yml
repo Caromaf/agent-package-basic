@@ -1,0 +1,8 @@
+name: work-loop
+version: 0.1.0
+description: ai-work / ai-decision Issue の依存と再計画ゲートを読み取り専用で確認する CLI と skill
+author: Caromaf
+includes: auto
+dependencies:
+  apm: []
+  mcp: []

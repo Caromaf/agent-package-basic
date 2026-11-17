@@ -177,10 +177,11 @@ diff に追加・変更されたコメントだけを対象にする。既存コ
 ```markdown
 ## Findings
 
-- **[Critical|High|Medium|Low]** `path/to/file.ext:123` <短い結論>
+- **[Critical|High|Medium|Low]** `path/to/file.ext:123-130` <短い結論>
   - Direct fact: <diff/docs/testsから直接言える事実>
-  - Impact: <利用者・運用・保守・セキュリティへの影響>
+  - Impact: <直すべき理由。何が・どの条件で・どう壊れる/困るかを、失敗シナリオまで具体的に書く>
   - Request: <具体的に変えてほしいこと>
+  - Author comment: <PR 作者へそのまま投稿できる文面>
 
 ## Verification
 
@@ -188,7 +189,7 @@ diff に追加・変更されたコメントだけを対象にする。既存コ
 
 ## Residual Risk / Open Questions
 
-- <未確認事項。findingではないもの>
+- <未確認事項。findingではないもの。作者への確認が必要なものは Author comment を質問形で付ける>
 
 ## Loop Verdict
 
@@ -214,6 +215,23 @@ Loop verdict:
 
 - mergeable
 ```
+
+### 修正箇所の行番号
+
+- 行番号は PR の head commit 時点のファイルの絶対行番号で書く。base 側や diff 内の相対位置は使わない。
+- `gh pr diff` には絶対行番号が出ないため、`git show <headRefOid>:<path> | rg -n '<pattern>'` で確認する。head が手元に無ければ `git fetch origin pull/<N>/head` で取得する。
+- 範囲は `path:42-43` の形で書く。1つの finding が複数ファイルにまたがる場合は、すべて列挙する。
+- 行番号を確認できなかった finding は、推測で書かず「行番号未確認」と明記する。
+
+### Author comment の書き方
+
+- 1〜3 文で端的に書く。起きうる問題を先に、依頼を後に置く。
+- 冷たくならないよう、断定や命令形を避け、`〜できますか`、`〜だと安心です`、`確認させてください` のような提案・質問の形にする。作者の能力や姿勢には触れない。
+- 作者の意図を推測しているだけの finding は、断定せず質問にする。
+- 必須ではない finding は Low とし、`任意です`、`このままでも大丈夫です` と明記する。
+- 修正の具体例があれば括弧で添える。
+- 言語は PR 本文に合わせる。
+- Loop Checker Policy に従うレビューでは、Request を修正 worker に渡すため、Author comment は省略してよい。
 
 ## Cleanup
 
