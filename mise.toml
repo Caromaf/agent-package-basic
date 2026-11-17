@@ -1,9 +1,9 @@
 [tools]
 dprint = "0.64.3"
-python = "3.14"
-rumdl = "0.3.3"
+python = "3.15"
+rumdl = "0.3.4"
 tombi = "1.11.2"
-uv = "0.13.7"
+uv = "0.13.8"
 yamllint = { version = "1.38.0", python = "3.14" }  # yamllint が Python 3.15 で動作しないため、Python 3.14 を指定する
 
 [env]
