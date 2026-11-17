@@ -1,5 +1,5 @@
 name: review-pr
-version: 0.1.0
+version: 0.2.0
 description: Review a pull request end-to-end with optional architecture-review deep dive for public API, configuration, lifecycle, security, and compatibility changes
 author: Caromaf
 includes: auto
