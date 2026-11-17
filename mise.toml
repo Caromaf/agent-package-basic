@@ -20,10 +20,6 @@ description = "packages 内の .sh ファイルに実行権限を付与する"
 quiet = true
 run = 'find ./packages ./scripts -type f \( -name "*.sh" -o -name "*.bash" -o -name "*.py" \) -exec chmod +x {} +'
 
-[tasks.upgrade]
-description = "mise tools の依存関係を最新にする"
-run = ["mise lock --bump", "mise install --locked"]
-
 [tasks.format]
 description = "dprint, rumdl, ruff, tombi を使ってコードを整形する"
 quiet = true
