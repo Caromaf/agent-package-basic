@@ -17,8 +17,8 @@
 [project]
 name = "agent-package-basic"
 version = "0.0.0"
-requires-python = ">=3.14"
 readme = "README.md"
+requires-python = ">=3.14"
 
 [dependency-groups]
 dev = ["PyYAML>=6.0.2,<7", "ty"]
@@ -33,24 +33,30 @@ line-length = 120
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-  "COM812", # trailing comma — `ruff format` と競合するため公式に推奨される無効化
-  "CPY001", # copyright notice — 配布物に著作権ヘッダーを付ける運用にしていないため無効化
+  "COM812",  # trailing comma — `ruff format` と競合するため公式に推奨される無効化
+  "CPY001",  # copyright notice — 配布物に著作権ヘッダーを付ける運用にしていないため無効化
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "{packages,scripts}/*" = [
-  "T201", # print の利用を許可
-  "D103", # パッケージ内のスクリプトは docstring を必須としない
-  "D105", # D103 と同方針。magic method にも docstring を必須としない
-  "S101", # スクリプトは self-check (assert ベースのテスト) を内蔵するため許可。tests/ に S101 を許す ruff の慣例と同じ
-  "PLR2004", # self-check の期待値比較はリテラル直書きの方が読みやすい
-  "D203", # D211 と競合するため無効化
-  "D213", # D212 と競合するため無効化
-  "D403", # 1 単語目を大文字にする規則（日本語 docstring と相性が悪い）
-  "D415", # first line should end with a period（日本語のコメントを書くときに困るので無効化）
-  "RUF002", # Allow ambiguous characters in docstrings (Japanese)
-  "RUF003", # Allow ambiguous characters in comments (Japanese)
+  "T201",  # print の利用を許可
+  "D103",  # パッケージ内のスクリプトは docstring を必須としない
+  "D105",  # D103 と同方針。magic method にも docstring を必須としない
+  "S101",  # スクリプトは self-check (assert ベースのテスト) を内蔵するため許可。tests/ に S101 を許す ruff の慣例と同じ
+  "PLR2004",  # self-check の期待値比較はリテラル直書きの方が読みやすい
+  "D203",  # D211 と競合するため無効化
+  "D213",  # D212 と競合するため無効化
+  "D403",  # 1 単語目を大文字にする規則（日本語 docstring と相性が悪い）
+  "D415",  # first line should end with a period（日本語のコメントを書くときに困るので無効化）
+  "RUF002",  # Allow ambiguous characters in docstrings (Japanese)
+  "RUF003",  # Allow ambiguous characters in comments (Japanese)
 ]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.ruff.format]
 quote-style = "double"
@@ -60,9 +66,3 @@ python-version = "3.14"
 
 [tool.ty.src]
 include = ["packages", "scripts"]
-
-[tool.ruff.lint.isort]
-combine-as-imports = true
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"

@@ -1,9 +1,10 @@
 [tools]
-dprint = "latest"
+dprint = "0.64.3"
 python = "3.14"
-rumdl = "latest"
-uv = "latest"
-yamllint = { version = "latest", python = "3.14" }  # yamllint が Python 3.15 で動作しないため、Python 3.14 を指定する
+rumdl = "0.3.3"
+tombi = "1.11.2"
+uv = "0.13.7"
+yamllint = { version = "1.38.0", python = "3.14" }  # yamllint が Python 3.15 で動作しないため、Python 3.14 を指定する
 
 [env]
 UV_PYTHON = { value = "{{ tools.python.path }}", tools = true }
@@ -19,24 +20,31 @@ description = "packages 内の .sh ファイルに実行権限を付与する"
 quiet = true
 run = 'find ./packages ./scripts -type f \( -name "*.sh" -o -name "*.bash" -o -name "*.py" \) -exec chmod +x {} +'
 
+[tasks.upgrade]
+description = "mise tools の依存関係を最新にする"
+run = ["mise upgrade", "mise lock"]
+
 [tasks.format]
-description = "dprint, rumdl, ruff を使ってコードを整形する"
+description = "dprint, rumdl, ruff, tombi を使ってコードを整形する"
 quiet = true
 depends = ["init"]
 run = [
   "dprint fmt",
   "rumdl fmt",
+  "tombi format",
   "uvx ruff format packages scripts",
   "uvx ruff check --fix packages scripts",
 ]
 
 [tasks.lint]
-description = "dprint, rumdl, yamllint, ruff, ty, SKILL.md frontmatter を使ってコードをチェックする"
+description = "dprint, rumdl, yamllint, ruff, ty, tombi, SKILL.md frontmatter を使ってコードをチェックする"
 quiet = true
 depends = ["init"]
 run = [
   "dprint check",
   "rumdl check",
+  "tombi format --check --diff",
+  "tombi lint",
   "yamllint .",
   "uvx ruff check packages scripts",
   "uvx ruff format --check packages scripts",
