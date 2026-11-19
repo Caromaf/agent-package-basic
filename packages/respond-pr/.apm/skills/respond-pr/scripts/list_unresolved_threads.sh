@@ -69,7 +69,7 @@ query($owner:String!, $name:String!, $pr:Int!, $cursor:String) {
   }
 }')"
   THREAD_PAGE="$(jq -c '.data.repository.pullRequest.reviewThreads' <<<"$RESPONSE")"
-  THREADS="$(jq -c --argjson old "$THREADS" --argjson new "$(jq -c '.nodes' <<<"$THREAD_PAGE")" '$old + $new')"
+  THREADS="$(jq -cn --argjson old "$THREADS" --argjson new "$(jq -c '.nodes' <<<"$THREAD_PAGE")" '$old + $new')"
   if [[ "$(jq -r '.pageInfo.hasNextPage' <<<"$THREAD_PAGE")" != true ]]; then
     break
   fi
@@ -100,7 +100,7 @@ query($threadId:ID!, $cursor:String) {
   }
 }')"
     COMMENT_CONNECTION="$(jq -c '.data.node.comments' <<<"$COMMENT_PAGE")"
-    COMMENTS="$(jq -c --argjson old "$COMMENTS" --argjson new "$(jq -c '.nodes' <<<"$COMMENT_CONNECTION")" '$old + $new')"
+    COMMENTS="$(jq -cn --argjson old "$COMMENTS" --argjson new "$(jq -c '.nodes' <<<"$COMMENT_CONNECTION")" '$old + $new')"
     THREAD="$(jq -c --argjson comments "$COMMENTS" --argjson pageInfo "$(jq -c '.pageInfo' <<<"$COMMENT_CONNECTION")" '.comments.nodes = $comments | .comments.pageInfo = $pageInfo' <<<"$THREAD")"
     COMMENT_CURSOR="$(jq -r '.pageInfo.endCursor // empty' <<<"$COMMENT_CONNECTION")"
   done
@@ -123,7 +123,7 @@ query($threadId:ID!, $cursor:String) {
           lastCommentCreatedAt: $last.createdAt
         }
     ' <<<"$THREAD")"
-    RESULTS="$(jq -c --argjson old "$RESULTS" --argjson new "[$RESULT]" '$old + $new')"
+    RESULTS="$(jq -cn --argjson old "$RESULTS" --argjson new "[$RESULT]" '$old + $new')"
   fi
 done < <(jq -c '.[]' <<<"$THREADS")
 
